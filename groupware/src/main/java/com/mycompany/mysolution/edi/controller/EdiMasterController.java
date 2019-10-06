@@ -42,5 +42,10 @@ public class EdiMasterController {
 		
 		return mv;
 	}
-
+	
+	@GetMapping("/ediWrite")
+	public ModelAndView createEdi(ModelAndView mv) {
+		mv.setViewName("edi/ediWrite");
+		return mv;
+	}
 }

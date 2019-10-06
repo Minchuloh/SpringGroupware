@@ -16,7 +16,7 @@
 <!-- 신규사원 입력 양식 -->
 
 <div class="virtual-box"></div>
-
+z
 <div class="container">
 	<div class="row">
 		<div class="offset-md-2 col-md-4">
@@ -104,6 +104,7 @@
 					                        <option value="HR">인사부</option>
 					                        <option value="SALES">영업부</option>
 					                        <option value="FINANCE">재무관리부</option>
+					                        <option value="MARKETING">마케팅부</option>
 					                    </select>                
 									</div>
 								</td>								
