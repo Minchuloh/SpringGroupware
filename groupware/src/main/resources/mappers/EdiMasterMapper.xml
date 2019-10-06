@@ -3,8 +3,24 @@
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mycompany.mysolution.edi.repository.EdiMasterMapper">
 
+<select id="getEdiTotalCount" resultType="int">
+	SELECT COUNT(*) FROM edi_master
+</select>
+
 <select id="getEdiMasterAll" resultMap="EdiMasterMapping">
-	select * from edi_master
+	SELECT edi_code, inp_emp_code, inp_emp_name, edi_type_name, edi_status_name, inp_date, edi_title, edi_contents, edi_status, edi_type
+	FROM 
+	   ( SELECT a.edi_code, a.inp_emp_code, a.edi_status, a.edi_type,
+	       (SELECT emp_name FROM emp_list b WHERE b.emp_code = a.inp_emp_code) AS inp_emp_name,
+	       (SELECT code_name FROM common_code_map b WHERE b.column_id = 'EDI_TYPE' AND b.code_id = a.edi_TYPE) AS edi_type_name,
+	       (SELECT code_name FROM common_code_map b WHERE b.column_id = 'EDI_STATUS' AND b.code_id = a.EDI_STATUS) AS edi_status_name,
+	       inp_date, edi_title, edi_contents,
+	       ROW_NUMBER() OVER(ORDER BY edi_code DESC) AS rNum
+	    FROM edi_master a     
+	    ORDER BY a.edi_code DESC )
+	WHERE 1=1 	
+	  AND rNum BETWEEN (#{ countPerPage } * (#{ page } - 1)) + 1
+	  AND (#{ countPerPage } * (#{ page } - 1)) + #{ countPerPage }
 </select>
 
 <resultMap id="EdiMasterMapping" type="com.mycompany.mysolution.edi.domain.EdiMaster">	
@@ -17,5 +33,8 @@
 	<result column="file_name" property="fileName"/>
 	<result column="inp_date" property="inpDate"/>
 	<result column="update_date" property="updateDate"/>
+	<result column="inp_emp_name" property="inpEmpName"/>
+	<result column="edi_type_name" property="ediTypeName"/>
+	<result column="edi_status_name" property="ediStatusName"/>
 </resultMap>
 </mapper>

@@ -190,7 +190,7 @@
 							
 							<tr>	<!-- 입사일 입력 시작 -->
 								<td style="text-align: left">
-									<p><strong>입사일을 입력해주세요.</strong>&nbsp;&nbsp;&nbsp;<span id="bankAccountChk"></span></p>
+									<p><strong>입사일을 입력해주세요.</strong>&nbsp;&nbsp;&nbsp;<span id="hireDateChk"></span></p>
 								</td>
 							</tr>
 							<tr>

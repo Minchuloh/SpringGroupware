@@ -16,7 +16,8 @@ import com.mycompany.mysolution.emp.repository.EmpListMapper;
 import lombok.extern.log4j.Log4j;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"file:src/main/resources/spring/mvc-config.xml"})
+//@ContextConfiguration(locations = {"file:src/main/resources/spring/mvc-config.xml"})
+@ContextConfiguration(locations = {"classpath:/spring/mvc-config.xml"})
 @Log4j
 public class RepositoryTest {
 	
@@ -28,7 +29,9 @@ public class RepositoryTest {
 	
 	@Test
 	public void getEdiTest() {
-		ediMapper.getEdiMasterAll().forEach(edi -> log.info(edi));
+		Search paging = new Search();
+		paging.setPage(1);
+		ediMapper.getEdiMasterAll(paging).forEach(edi -> log.info(edi));
 	}
 	
 	@Test
@@ -100,5 +103,9 @@ public class RepositoryTest {
 		empMapper.getEmpListWithPaging(paging).forEach(emp -> log.info(emp));
 	}
 	
+	@Test
+	public void getEdiTotalCountTest() {
+		log.info("count: " + ediMapper.getEdiTotalCount());
+	}
 	
 }

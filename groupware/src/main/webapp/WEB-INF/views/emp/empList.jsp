@@ -83,8 +83,8 @@
             <div class="form-group">
                 <select class="form-control" name="condition" id="condition">
                     <option value="empCode" ${param.condition == 'empCode' ? 'selected' : ''}>사번</option>
-                    <option value="empName" ${param.condition == 'content' ? 'selected' : ''}>이름</option>
-                    <option value="empCodeempName" ${param.condition == 'titleContent' ? 'selected' : ''}>사번+이름</option>
+                    <option value="empName" ${param.condition == 'empName' ? 'selected' : ''}>이름</option>
+                    <option value="empCodeempName" ${param.condition == 'empCodeempName' ? 'selected' : ''}>사번+이름</option>
                 </select>
             </div>
         </div>
