@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mycompany.mysolution.edi.repository.EdiMasterMapper">
+
+<select id="getEdiMasterAll" resultMap="EdiMasterMapping">
+	select * from edi_master
+</select>
+
+<resultMap id="EdiMasterMapping" type="com.mycompany.mysolution.edi.domain.EdiMaster">	
+	<id column="edi_code" property="ediCode"/>
+	<result column="inp_emp_code" property="inpEmpCode"/>
+	<result column="edi_title" property="ediTitle"/>
+	<result column="edi_contents" property="ediContents"/>
+	<result column="edi_type" property="ediType"/>
+	<result column="edi_status" property="ediStatus"/>
+	<result column="file_name" property="fileName"/>
+	<result column="inp_date" property="inpDate"/>
+	<result column="update_date" property="updateDate"/>
+</resultMap>
+</mapper>

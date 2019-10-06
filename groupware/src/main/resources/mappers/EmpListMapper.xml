@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mycompany.mysolution.emp.repository.EmpListMapper">
+
+<select id="getEmpCodeSeq" resultType="String">
+	SELECT 'H'||lpad(SEQ_EMP_LIST.NEXTVAL, 4, '0') FROM DUAL
+</select>
+
+<insert id="createEmp">
+	INSERT INTO emp_list
+		(EMP_CODE, EMP_NAME, PASSWORD, EMAIL, PHONE, DEPT_CODE, 
+		 POSITION, SALARY, BANK_NAME, BANK_ACCOUNT, PHOTO, FIRE_YN, HIRE_DATE)
+	VALUES
+		(#{empCode}, #{empName}, #{password}, #{email}, #{phone}, #{deptCode}, 
+		 #{position}, #{salary}, #{bankName}, #{bankAccount}, #{photo}, 'N', #{hireDate})
+</insert>
+
+<select id="isDuplicate" parameterType="hashmap" resultType="int">
+	SELECT COUNT(*) 
+	FROM emp_list
+	<if test="kind == 'email'"> 
+		WHERE email = #{info}
+	</if>
+	<if test="kind == 'phone'"> 
+		WHERE phone = #{info}
+	</if>  
+</select>
+
+<select id="getTotalCount" resultType="int">
+	SELECT COUNT(1) 
+	FROM emp_list
+	WHERE 1=1
+	<include refid="search" />
+</select>
+
+<select id="getEmpList" resultMap="EmpListMapping">
+	SELECT * FROM emp_list
+</select>
+
+<select id="getEmp" resultMap="EmpListMapping">
+	SELECT * FROM emp_list WHERE emp_code = #{empCode}
+</select>
+
+<select id="getEmpListWithPaging" resultMap="EmpListMapping">
+	SELECT EMP_CODE, EMP_NAME, EMAIL, PHONE, DEPT_CODE, DEPT_NAME, POSITION, SALARY, BANK_NAME, BANK_ACCOUNT, 
+		   PHOTO, FIRE_YN, FIRE_DATE, HIRE_DATE, INP_DATE, UPDATE_DATE 
+	  FROM ( SELECT a.EMP_CODE, a.EMP_NAME, 
+      		        a.EMAIL, a.PHONE, a.DEPT_CODE, 
+            		(SELECT dept_name FROM dept_list WHERE a.dept_code = dept_code) as dept_name,
+            		a.POSITION, a.SALARY, a.BANK_NAME, a.BANK_ACCOUNT, 
+            		a.PHOTO, a.FIRE_YN, a.FIRE_DATE, a.HIRE_DATE, a.INP_DATE, a.UPDATE_DATE, 
+            		ROW_NUMBER() OVER(ORDER BY EMP_CODE DESC) AS rNum 
+         	   FROM emp_list a
+         	  WHERE 1=1
+         	  <include refid="search" />           	    
+     	      ORDER BY EMP_CODE DESC) 
+	WHERE 1=1 	
+	  AND rNum BETWEEN (#{ countPerPage } * (#{ page } - 1)) + 1
+	  AND (#{ countPerPage } * (#{ page } - 1)) + #{ countPerPage }
+</select>
+
+<update id="modifyEmpName">
+	UPDATE emp_list
+	SET EMP_NAME = #{empName}
+	WHERE emp_code = #{empCode}
+</update>
+
+<delete id="deleteEmp">
+	DELETE FROM emp_list WHERE emp_code = #{empCode}
+</delete>
+
+<!-- 중복되는 동적 SQL구문 처리 -->
+<sql id="search">
+	<if test="condition != null">
+		<if test="condition == 'empCode'">
+		    AND EMP_CODE LIKE '%' || #{keyword} || '%'
+		</if>
+		<if test="condition == 'empName'">       
+		    AND EMP_NAME LIKE '%' || #{keyword} || '%'
+		</if>
+		<if test="condition == 'empCodeempName'">
+		    AND EMP_CODE LIKE '%' || #{keyword} || '%'
+		    OR  EMP_NAME LIKE '%' || #{keyword} || '%'
+		</if>
+	</if>       
+</sql>
+<resultMap id="EmpListMapping" type="com.mycompany.mysolution.emp.domain.EmpList">	
+	<id column="EMP_CODE" property="empCode"/>
+	<result column="EMP_NAME" property="empName"/>
+	<result column="PASSWORD" property="password"/>
+	<result column="EMAIL" property="email"/>
+	<result column="PHONE" property="phone"/>
+	<result column="DEPT_CODE" property="deptCode"/>
+	<result column="POSITION" property="position"/>
+	<result column="SALARY" property="salary"/>
+	<result column="BANK_NAME" property="bankName"/>
+	<result column="BANK_ACCOUNT" property="bankAccount"/>
+	<result column="PHOTO" property="photo"/>
+	<result column="FIRE_YN" property="fireYn"/>
+	<result column="HIRE_DATE" property="hireDate"/>
+	<result column="FIRE_DATE" property="fireDate"/>
+	<result column="SESSION_ID" property="sessionId"/>
+	<result column="LIMIT_TIME" property="limitTime"/>
+	<result column="INP_DATE" property="inpDate"/>
+	<result column="UPDATE_DATE" property="updateDate"/>
+	<collection property="deptList" resultMap="DeptListMapping"/>
+</resultMap>
+
+<resultMap id="DeptListMapping" type="com.mycompany.mysolution.emp.domain.DeptList" >
+	<id column="DEPT_CODE" property="deptCode"/>
+	<result column="DEPT_NAME" property="deptName"/>
+	<result column="MGR_EMP_CODE" property="mgrEmpCode"/>
+	<result column="INP_DATE" property="inpDate"/>
+	<result column="UPDATE_DATE" property="updateDate"/>
+</resultMap>
+</mapper>
