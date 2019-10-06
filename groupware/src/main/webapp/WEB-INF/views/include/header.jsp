@@ -15,15 +15,15 @@
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="/">Home
+            <a class="nav-link" href="/">메인화면
               <span class="sr-only">(current)</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/empList/1">사원목록</a>
+            <a class="nav-link" href="/empList/1">사원관리</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Menu2</a>
+            <a class="nav-link" href="/ediList/1">전자결재</a>
           </li>
           
           <!-- 로그인 하지 않은 사람이 보게될 메뉴 -->
