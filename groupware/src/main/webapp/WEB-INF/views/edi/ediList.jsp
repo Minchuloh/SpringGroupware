@@ -66,7 +66,7 @@
 					<br>
 					<div style="text-align: center;">
 						<a href="#n" class="btn btn-danger"><strong>검색하기</strong></a>
-						<a href="#n" class="btn btn-secondary"><strong>등록하기</strong></a>
+						<a href="/ediWrite" class="btn btn-secondary"><strong>등록하기</strong></a>
 					</div>		
 				</form>
 				
