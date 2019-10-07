@@ -35,8 +35,8 @@
 							<tr>
 								<th scope="row">기간</th>
 								<td>
-									<input type="date" id="sDate" name="startDate" value="" class="glyphicon glyphicon-calendar" title="기간시작" /> ~
-									<input type="date" id="eDate" name="endDate" value="" class="glyphicon glyphicon-calendar" title="기간끝" />
+									<input type="date" id="sDate" name="startDate" class="glyphicon glyphicon-calendar" title="기간시작" /> ~
+									<input type="date" id="eDate" name="endDate" class="glyphicon glyphicon-calendar" title="기간끝" />
 									<a href="#" class="btn btn-warning"><strong>1주일</strong></a>
 									<a href="#" class="btn btn-warning"><strong>2주일</strong></a>
 									<a href="#" class="btn btn-warning"><strong>1개월</strong></a>

@@ -4,4 +4,6 @@
 <script src="/vendor/jquery/jquery.slim.min.js"></script>
 <script src="/vendor/jquery/jquery.min.js"></script>
 <script src="/vendor/jquery/jquery.form.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
