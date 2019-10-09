@@ -17,7 +17,7 @@
 	   ( SELECT a.edi_code, a.inp_emp_code, a.edi_status, a.edi_type,
 	       (SELECT emp_name FROM emp_list b WHERE b.emp_code = a.inp_emp_code) AS inp_emp_name,
 	       (SELECT code_name FROM common_code_map b WHERE b.column_id = 'EDI_TYPE' AND b.code_id = a.edi_TYPE) AS edi_type_name,
-	       (SELECT code_name FROM common_code_map b WHERE b.column_id = 'EDI_STATUS' AND b.code_id = a.EDI_STATUS) AS edi_status_name,
+	       (SELECT code_name FROM common_code_map b WHERE b.column_id = 'EDI_STATUS' AND b.code_id = a.EDI_STATUS) AS edi_status_name,	       
 	       inp_date, edi_title, edi_contents,
 	       ROW_NUMBER() OVER(ORDER BY edi_code DESC) AS rNum
 	    FROM edi_master a     
@@ -25,6 +25,52 @@
 	WHERE 1=1 	
 	  AND rNum BETWEEN (#{ countPerPage } * (#{ page } - 1)) + 1
 	  AND (#{ countPerPage } * (#{ page } - 1)) + #{ countPerPage }
+</select>
+
+<select id="getEdiMaster" resultMap="EdiMasterMapping">
+	SELECT a.edi_code, a.inp_emp_code, a.edi_status, a.edi_type,
+	       (SELECT emp_name FROM emp_list b WHERE b.emp_code = a.inp_emp_code) AS inp_emp_name,
+	       (SELECT code_name FROM common_code_map b WHERE b.column_id = 'EDI_TYPE' AND b.code_id = a.edi_TYPE) AS edi_type_name,
+	       (SELECT code_name FROM common_code_map b WHERE b.column_id = 'EDI_STATUS' AND b.code_id = a.EDI_STATUS) AS edi_status_name,
+	       (SELECT dept_code FROM emp_list WHERE emp_code = a.inp_emp_code) AS dept_code,
+	       (SELECT dept_name FROM dept_list WHERE dept_code = (SELECT dept_code FROM emp_list WHERE emp_code = a.inp_emp_code)) AS dept_name,
+	       inp_date, edi_title, edi_contents
+	FROM edi_master a
+	WHERE a.edi_code = #{ edi_code }
+</select>
+
+<select id="getEdiSett" resultMap="EdiSettMapping">
+	SELECT EDI_CODE, EDI_SEQ, SETT_EMP_CODE, EDI_COMMENTS, EDI_SETT_STATUS, INP_DATE,
+		   (SELECT EMP_NAME FROM EMP_LIST WHERE EMP_CODE = SETT_EMP_CODE) AS SETT_EMP_NAME,
+		   (SELECT DEPT_CODE FROM DEPT_LIST WHERE DEPT_CODE = (SELECT DEPT_CODE FROM EMP_LIST WHERE EMP_CODE = SETT_EMP_CODE)) AS SETT_DEPT_CODE,
+		   (SELECT DEPT_NAME FROM DEPT_LIST WHERE DEPT_CODE = (SELECT DEPT_CODE FROM EMP_LIST WHERE EMP_CODE = SETT_EMP_CODE)) AS SETT_DEPT_NAME,
+		   (SELECT CODE_NAME FROM COMMON_CODE_MAP WHERE COLUMN_ID = 'EDI_STATUS' AND CODE_ID = a.EDI_SETT_STATUS) AS EDI_SETT_STATUS_NAME
+	FROM edi_sett a
+	WHERE EDI_CODE = #{ ediCode }
+</select>
+
+<select id="getEdiCoWork" resultMap="EdiCoWorkMapping">
+	SELECT COWORK_DEPT_CODE, EDI_COWORK_STATUS, EDI_COWORK_COMMENTS, INP_EMP_CODE,
+		   (SELECT EMP_NAME FROM EMP_LIST WHERE EMP_CODE = b.inp_emp_code) AS INP_EMP_NAME,
+		   (SELECT DEPT_NAME FROM DEPT_LIST WHERE DEPT_CODE = a.COWORK_DEPT_CODE) AS COWORK_DEPT_NAME,
+		   (SELECT MGR_EMP_CODE FROM DEPT_LIST WHERE DEPT_CODE = a.COWORK_DEPT_CODE) AS MGR_EMP_CODE
+	FROM EDI_COWORK_DEPT a, EDI_MASTER b
+	WHERE 1=1
+	AND	  a.EDI_CODE = b.EDI_CODE
+	AND   a.EDI_CODE = #{ ediCode }
+</select>
+
+<select id="getEdiInform" resultMap="EdiInformMapping">
+	SELECT INFORM_DEPT_CODE, 
+		   (SELECT DEPT_NAME FROM DEPT_LIST WHERE DEPT_CODE = a.INFORM_DEPT_CODE) AS INFORM_DEPT_NAME
+	FROM EDI_INFORM_DEPT a
+	WHERE a.EDI_CODE = #{ ediCode }
+</select>
+
+<select id="getEdiWorkDay" resultMap="EdiWorkDayMapping">
+	SELECT EDI_WORK_DATE, EDI_WORK_TYPE
+	FROM EDI_WORK_DAY
+	WHERE EDI_CODE = #{ ediCode }
 </select>
 
 <insert id="createEdiMaster">
@@ -59,6 +105,23 @@
 	)
 </insert>
 
+<insert id="createWorkDay">
+	INSERT INTO EDI_WORK_DAY (
+	    EDI_CODE, EDI_EMP_CODE, EDI_WORK_TYPE, EDI_WORK_DATE
+	) VALUES (
+	    #{ ediCode }, #{ ediEmpCode }, #{ ediWorkType }, #{ ediWorkDate }
+	)
+</insert>
+
+<insert id="createBudgetUse">
+	INSERT INTO EDI_BUDGET_USE (
+	    EDI_CODE, USE_BUDGET, REFUND_DATE, BANK_NAME, BANK_ACCOUNT, BANK_OWNER
+	) VALUES (
+	    #{ ediCode }, #{ useBudget }, #{ refundDate }, #{ bankName }, #{ bankAccount }, #{ bankOwner }
+	)
+</insert>
+
+
 <resultMap id="EdiMasterMapping" type="com.mycompany.mysolution.edi.domain.EdiMaster">	
 	<id column="edi_code" property="ediCode"/>
 	<result column="inp_emp_code" property="inpEmpCode"/>
@@ -72,6 +135,8 @@
 	<result column="inp_emp_name" property="inpEmpName"/>
 	<result column="edi_type_name" property="ediTypeName"/>
 	<result column="edi_status_name" property="ediStatusName"/>
+	<result column="dept_code" property="deptCode" />
+	<result column="dept_name" property="deptName" />
 </resultMap>
 
 <resultMap id="EdiSettMapping" type="com.mycompany.mysolution.edi.domain.EdiSett" >
@@ -81,12 +146,22 @@
 	<result column="EDI_COMMENTS" property="ediComments"/>
 	<result column="INP_DATE" property="inpDate"/>
 	<result column="UPDATE_DATE" property="updateDate"/>
+	<result column="SETT_EMP_NAME" property="settEmpName"/>
+	<result column="SETT_DEPT_CODE" property="settDeptCode"/>
+	<result column="SETT_DEPT_NAME" property="settDeptName"/>
+	<result column="EDI_SETT_STATUS" property="ediSettStatus"/>
+	<result column="EDI_SETT_STATUS_NAME" property="ediSettStatusName"/>
 </resultMap>
 
 <resultMap id="EdiCoWorkMapping" type="com.mycompany.mysolution.edi.domain.EdiCoWork" >
 	<id column="EDI_CODE" property="ediCode"/>
 	<id column="EDI_SEQ" property="ediSeq"/>
 	<id column="COWORK_DEPT_CODE" property="coWorkDeptCode"/>
+	<result column="INP_EMP_CODE" property="inpEmpCode"/>
+	<result column="INP_EMP_NAME" property="inpEmpName"/>
+	<result column="COWORK_DEPT_NAME" property="coWorkDeptName"/>
+	<result column="MGR_EMP_CODE" property="MgrEmpCode"/>
+	<result column="MGR_EMP_NAME" property="MgrEmpName"/>	
 	<result column="EDI_COWORK_STATUS" property="ediCoWorkStatus"/>
 	<result column="EDI_COWORK_COMMENTS" property="ediCoWorkComments"/>
 	<result column="INP_DATE" property="inpDate"/>
@@ -97,6 +172,16 @@
 	<id column="EDI_CODE" property="ediCode"/>
 	<id column="EDI_SEQ" property="ediSeq"/>
 	<id column="INFORM_DEPT_CODE" property="informDeptCode"/>
+	<result column="INFORM_DEPT_NAME" property="informDeptName"/>
+	<result column="INP_DATE" property="inpDate"/>
+	<result column="UPDATE_DATE" property="updateDate"/>
+</resultMap>
+
+<resultMap id="EdiWorkDayMapping" type="com.mycompany.mysolution.edi.domain.EdiWorkDay" >
+	<id column="EDI_CODE" property="ediCode"/>
+	<result column="EDI_EMP_CODE" property="ediEmpCode"/>
+	<result column="EDI_WORK_TYPE" property="ediWorkType"/>
+	<result column="EDI_WORK_DATE" property="ediWorkDate"/>
 	<result column="INP_DATE" property="inpDate"/>
 	<result column="UPDATE_DATE" property="updateDate"/>
 </resultMap>

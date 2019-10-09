@@ -10,6 +10,7 @@ public class EdiInform {
 	String ediCode;
 	Integer ediSeq;
 	String informDeptCode;	
+	String informDeptName;
 	Date inpDate;
 	Date updateDate;
 }

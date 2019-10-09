@@ -14,8 +14,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.mycompany.mysolution.common.paging.PageCreator;
 import com.mycompany.mysolution.common.searching.Search;
+import com.mycompany.mysolution.edi.domain.EdiBudgetUse;
 import com.mycompany.mysolution.edi.domain.EdiMaster;
 import com.mycompany.mysolution.edi.domain.EdiSett;
+import com.mycompany.mysolution.edi.domain.EdiWorkDay;
 import com.mycompany.mysolution.edi.service.EdiMasterService;
 
 import lombok.extern.log4j.Log4j;
@@ -53,22 +55,42 @@ public class EdiMasterController {
 	
 	@PostMapping("/ediWrite")
 	public ModelAndView createEdi(ModelAndView mv, EdiMaster edi, EdiSett ediSett,	
-			String[] coWorkDeptCode, String[] informDeptCode) {
+			String[] coWorkDeptCodeArr, String[] informDeptCodeArr, EdiWorkDay ediWorkDay, EdiBudgetUse ediBudgetUse) {		
 		
 		Map<String, Object> ediDatas = new HashMap<>();
 		ediDatas.put("edi", edi);
 		ediDatas.put("ediSett", ediSett);
-		ediDatas.put("coWorkDeptCode", coWorkDeptCode);
-		ediDatas.put("informDeptCode", informDeptCode);
+		ediDatas.put("ediWorkDay", ediWorkDay);
+		ediDatas.put("ediBudgetUse", ediBudgetUse);
 		
 		if (edi.getEdiType().equals("0001")) {
 			ediService.createEdiOrdinary(ediDatas);
-		} else if (edi.getEdiType().equals("0002") ) {
+			if(coWorkDeptCodeArr != null) {
+				ediService.createCoWork(coWorkDeptCodeArr, edi.getEdiCode());;
+			}
+			if(informDeptCodeArr != null) {
+				ediService.createInform(informDeptCodeArr, edi.getEdiCode());;
+			}
+			log.info("일반품의 등록 완료: " + edi.getEdiCode());
+		} else if (edi.getEdiType().equals("0002") ) {			
 			ediService.createEdiWorkDay(ediDatas);
-		} else {
+			if(coWorkDeptCodeArr != null) {
+				ediService.createCoWork(coWorkDeptCodeArr, edi.getEdiCode());;
+			}
+			if(informDeptCodeArr != null) {
+				ediService.createInform(informDeptCodeArr, edi.getEdiCode());;
+			}
+			log.info("근태신청 등록 완료: " + edi.getEdiCode());
+		} else {			
 			ediService.createEdiRefund(ediDatas);
-		}
-		
+			if(coWorkDeptCodeArr != null) {
+				ediService.createCoWork(coWorkDeptCodeArr, edi.getEdiCode());;
+			}
+			if(informDeptCodeArr != null) {
+				ediService.createInform(informDeptCodeArr, edi.getEdiCode());;
+			}
+			log.info("비용환급 등록 완료: " + edi.getEdiCode());
+		}		
 		
 		mv.setViewName("redirect:/ediList/1");
 		return mv;
@@ -77,6 +99,12 @@ public class EdiMasterController {
 	@GetMapping("/ediSett")
 	public ModelAndView settEdi(ModelAndView mv) {
 		mv.setViewName("edi/ediSett");
+		return mv;
+	}
+	
+	@GetMapping("/ediContent")
+	public ModelAndView contentEdi(ModelAndView mv) {
+		mv.setViewName("edi/ediContent");
 		return mv;
 	}
 }

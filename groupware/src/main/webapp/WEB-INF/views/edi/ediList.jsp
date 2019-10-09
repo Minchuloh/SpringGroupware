@@ -7,23 +7,23 @@
 <head>
 <jsp:include page="../include/static-head.jsp" />
 <style>
-	.virtual-box {
-		margin-bottom: 120px;
-	}
-	.article-link {
-		font-weight: 700;
-		color: brown;
-	}
-	th {
-        background-color: #eee;
-    }
+.virtual-box {
+	margin-bottom: 120px;
+}
+.article-link {
+	font-weight: 700;
+	color: brown;
+}
+th {
+       background-color: #eee;
+   }
 </style>
 </head>
 <body>
 
 <jsp:include page="../include/header.jsp" />
 
-<div class="virtual-box"></div>
+<div class="virtual-box" style="margin-bottom: 20px;"></div>
 
 <div class="container">
 	<div class="row">
@@ -34,7 +34,7 @@
 			
 			<div class="card-body">
 			
-				 <!--START 전자결재 입력 폼 -->
+			<!--START 전자결재 입력 폼 -->
 			<form action="/ediList/1" method="GET">	
 					
                 <table class="table table-bordered">
@@ -91,8 +91,8 @@
                     <a href="/ediWrite" class="btn btn-default"><strong>등록하기</strong></a>
                 </div>
             
-            </form>
-
+            </form>			
+			
             <table style="margin-top:30px;" class="table table-secondary table-hover table-border">
                 <thead class="thead-dark">
                     <tr>
@@ -110,11 +110,11 @@
                     <tr>
                         <td>${edi.ediCode}</td>
                         <td>${edi.inpEmpName}</td>	                    
-                        <td>${edi.ediTypeName}</td>
+                        <td>${edi.ediTypeName}</td>                                      	
+                        <td>${edi.ediTitle}</td> 
                         <td>
                             <fmt:formatDate value="${edi.inpDate}" pattern="yyyy년 MM월 dd일 a hh:mm" />	                    
-                        </td>                	
-                        <td>${edi.ediTitle}</td> 
+                        </td> 
                         <td>${edi.ediStatusName}</td>
                     </tr>
                 </c:forEach>

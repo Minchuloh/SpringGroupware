@@ -9,7 +9,12 @@ public class EdiCoWork {
 	
 	String ediCode;
 	Integer ediSeq;
+	String inpEmpCode;
+	String inpEmpName;
 	String coWorkDeptCode;
+	String coWorkDeptName;
+	String MgrEmpCode;
+	String MgrEmpName;
 	String ediCoWorkStatus;
 	String ediCoWorkComments;
 	Date inpDate;

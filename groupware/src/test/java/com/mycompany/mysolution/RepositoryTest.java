@@ -11,10 +11,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.mycompany.mysolution.common.searching.Search;
+import com.mycompany.mysolution.edi.domain.EdiBudgetUse;
 import com.mycompany.mysolution.edi.domain.EdiCoWork;
 import com.mycompany.mysolution.edi.domain.EdiInform;
 import com.mycompany.mysolution.edi.domain.EdiMaster;
 import com.mycompany.mysolution.edi.domain.EdiSett;
+import com.mycompany.mysolution.edi.domain.EdiWorkDay;
 import com.mycompany.mysolution.edi.repository.EdiMasterMapper;
 import com.mycompany.mysolution.emp.domain.EmpList;
 import com.mycompany.mysolution.emp.repository.EmpListMapper;
@@ -170,4 +172,58 @@ public class RepositoryTest {
 		ediMapper.createInform(ediInform);
 		log.info("createEdiInform 성공");		
 	}
+	
+	@SuppressWarnings("deprecation")
+	@Test
+	public void createEdiWorkDay() {
+		EdiWorkDay ediWorkDay = new EdiWorkDay();
+		ediWorkDay.setEdiCode(ediMapper.getEdiCodeSeq());
+		ediWorkDay.setEdiWorkDate(new Date(2019, 10, 1));
+		ediWorkDay.setEdiWorkType("01");
+		ediWorkDay.setEdiEmpCode("H0001");
+		
+		ediMapper.createWorkDay(ediWorkDay);
+		log.info("createEdiWorkDay 성공");
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Test
+	public void createEdiBudgetUse() {
+		EdiBudgetUse ediBudgetUse = new EdiBudgetUse();		
+		ediBudgetUse.setEdiCode(ediMapper.getEdiCodeSeq());
+		ediBudgetUse.setBankAccount("12345678900");
+		ediBudgetUse.setBankName("KB하나");
+		ediBudgetUse.setBankOwner("오민철");
+		ediBudgetUse.setUseBudget(400000L);
+		ediBudgetUse.setRefundDate(new Date(2019, 10, 1));
+		
+		ediMapper.createBudgetUse(ediBudgetUse);
+		log.info("createEdiBudgetUse 성공");
+	}
+	
+	@Test
+	public void getEdiMasterContent() {
+		log.info(ediMapper.getEdiMaster("E0000059"));		
+	}
+	
+	@Test
+	public void getEdiSettContent() {
+		log.info(ediMapper.getEdiSett("E0000059"));
+	}
+	
+	@Test
+	public void getEdiWorkDay() {
+		log.info(ediMapper.getEdiWorkDay("E0000060"));
+	}
+	
+	@Test
+	public void getEdiCowork() {
+		log.info(ediMapper.getEdiCoWork("E0000082"));
+	}
+	
+	@Test
+	public void getEdiInform() {
+		log.info(ediMapper.getEdiInform("E0000082"));
+	}
+	
 }

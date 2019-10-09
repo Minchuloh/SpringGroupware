@@ -9,7 +9,6 @@
 .virtual-box {
 	margin-bottom: 120px;
 }
-
 th {
 	background-color: #eee;
 }
@@ -18,6 +17,8 @@ th {
 <body>
 
 	<jsp:include page="../include/header.jsp" />
+	
+	<div class="virtual-box" style="margin-bottom: 20px;"></div>
 
 	<!-- 전자결재 입력 양식 -->
 

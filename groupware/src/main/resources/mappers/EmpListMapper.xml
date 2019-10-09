@@ -60,6 +60,13 @@
 	  AND (#{ countPerPage } * (#{ page } - 1)) + #{ countPerPage }
 </select>
 
+<select id="getBankInfo" resultMap="EmpListMapping">
+	SELECT BANK_ACCOUNT, BANK_NAME
+	FROM emp_list
+	WHERE EMP_CODE = #{ empCode }
+</select>
+
+
 <update id="modifyEmpName">
 	UPDATE emp_list
 	SET EMP_NAME = #{empName}

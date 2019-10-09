@@ -18,4 +18,8 @@ public interface EdiMasterService {
 	
 	public void createEdiRefund(Map<String, Object> ediDatas);
 	
+	public void createCoWork(String[] deptCodeArr, String ediCode);
+	
+	public void createInform(String[] deptCodeArr, String ediCode);
+	
 }

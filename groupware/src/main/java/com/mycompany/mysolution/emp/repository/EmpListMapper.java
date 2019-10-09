@@ -15,6 +15,8 @@ public interface EmpListMapper {
 	//중복체크 (이메일, 연락처)
 	int isDuplicate(Map<String, Object> datas);
 	
+	EmpList getBankInfo(String empCode);
+	
 	Integer getTotalCount(Search paging);
 	
 	List<EmpList> getEmpList();

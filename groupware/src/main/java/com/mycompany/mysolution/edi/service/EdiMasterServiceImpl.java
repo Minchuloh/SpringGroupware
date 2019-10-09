@@ -8,11 +8,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mycompany.mysolution.common.searching.Search;
+import com.mycompany.mysolution.edi.domain.EdiBudgetUse;
 import com.mycompany.mysolution.edi.domain.EdiCoWork;
 import com.mycompany.mysolution.edi.domain.EdiInform;
 import com.mycompany.mysolution.edi.domain.EdiMaster;
 import com.mycompany.mysolution.edi.domain.EdiSett;
+import com.mycompany.mysolution.edi.domain.EdiWorkDay;
 import com.mycompany.mysolution.edi.repository.EdiMasterMapper;
+import com.mycompany.mysolution.emp.domain.EmpList;
+import com.mycompany.mysolution.emp.repository.EmpListMapper;
 
 import lombok.extern.log4j.Log4j;
 
@@ -22,6 +26,9 @@ public class EdiMasterServiceImpl implements EdiMasterService {
 
 	@Autowired
 	EdiMasterMapper ediMapper;
+	
+	@Autowired
+	EmpListMapper empMapper;
 	
 	@Override
 	public List<EdiMaster> getEdiMasterAll(Search paging) {	
@@ -55,48 +62,96 @@ public class EdiMasterServiceImpl implements EdiMasterService {
 		ediMapper.createEdiSett(ediSett);		
 		log.info("EDI_SETT 등록완료");
 		
-		//EDI_COWORK_DEPT INSERT LOGIC
-		String[] coWorkDeptCode = (String[])ediDatas.get("coWorkDeptCode");
-		if (coWorkDeptCode != null) {
-			for(int i = 0 ; i < coWorkDeptCode.length ; i++) {
-				
-				EdiCoWork ediCoWork = new EdiCoWork();
-				ediCoWork.setEdiCode(edi.getEdiCode());
-				ediCoWork.setEdiSeq(1);
-				ediCoWork.setCoWorkDeptCode(coWorkDeptCode[i]);
-				ediCoWork.setEdiCoWorkStatus("0");
-				ediCoWork.setEdiCoWorkComments("");
-				ediMapper.createCoWork(ediCoWork);
-			}
-		}
-		log.info("EDI_COWORK_DEPT 등록완료");
-		
-		//EDI_INFORM_DEPT INSERT LOGIC
-		String[] informDeptCode = (String[])ediDatas.get("informDeptCode");
-		if (informDeptCode != null) {
-			for(int i = 0 ; i < informDeptCode.length ; i++) {
-				
-				EdiInform ediInform = new EdiInform();
-				ediInform.setEdiCode(edi.getEdiCode());
-				ediInform.setEdiSeq(1);
-				ediInform.setInformDeptCode(informDeptCode[i]);				
-				ediMapper.createInform(ediInform);
-			}
-		}
-		log.info("EDI_INFROM_DEPT 등록완료");
-				
-		log.info("일반품의 등록성공, 문서번호: " + edi.getEdiCode());		
 	}
 	
 	@Override
 	public void createEdiWorkDay(Map<String, Object> ediDatas) {
-		// TODO Auto-generated method stub
+		
+		//EDI_MASTER INSERT LOGIC
+		EdiMaster edi = (EdiMaster)ediDatas.get("edi");	
+		edi.setEdiCode(ediMapper.getEdiCodeSeq());
+		edi.setEdiStatus("0");		
+		ediMapper.createEdiMaster(edi);		
+		log.info("EDI_MASTER 등록완료");
+		
+		//EDI_SETT INSERT LOGIC
+		EdiSett ediSett = (EdiSett)ediDatas.get("ediSett");		
+		ediSett.setEdiCode(edi.getEdiCode());		
+		ediSett.setEdiSeq(1);
+		ediSett.setEdiSettStatus("0");
+		ediSett.setEdiComments("");
+		ediMapper.createEdiSett(ediSett);		
+		log.info("EDI_SETT 등록완료");
+
+		//EDI_WORK_DAY INSERT LOGIC
+		EdiWorkDay ediWorkDay = (EdiWorkDay)ediDatas.get("ediWorkDay");
+		ediWorkDay.setEdiCode(edi.getEdiCode());
+		ediWorkDay.setEdiEmpCode(edi.getInpEmpCode());
+		ediMapper.createWorkDay(ediWorkDay);
+		log.info("EDI_WORK_DAY 등록완료");
 		
 	}
 	
 	@Override
 	public void createEdiRefund(Map<String, Object> ediDatas) {
-		// TODO Auto-generated method stub
+		
+		//EDI_MASTER INSERT LOGIC
+		EdiMaster edi = (EdiMaster)ediDatas.get("edi");	
+		edi.setEdiCode(ediMapper.getEdiCodeSeq());
+		edi.setEdiStatus("0");		
+		ediMapper.createEdiMaster(edi);		
+		log.info("EDI_MASTER 등록완료");
+		
+		//EDI_SETT INSERT LOGIC
+		EdiSett ediSett = (EdiSett)ediDatas.get("ediSett");		
+		ediSett.setEdiCode(edi.getEdiCode());		
+		ediSett.setEdiSeq(1);
+		ediSett.setEdiSettStatus("0");
+		ediSett.setEdiComments("");
+		ediMapper.createEdiSett(ediSett);		
+		log.info("EDI_SETT 등록완료");
+		
+		//EDI_BUDGET_USE INSERT LOGIC			
+		EdiBudgetUse ediBudgetUse = (EdiBudgetUse)ediDatas.get("ediBudgetUse");	
+		
+		//작성자 기준 은행정보 조회
+		EmpList emp = empMapper.getBankInfo(edi.getInpEmpCode());		
+		
+		ediBudgetUse.setEdiCode(edi.getEdiCode());
+		ediBudgetUse.setBankOwner(edi.getInpEmpCode());
+		ediBudgetUse.setBankAccount(emp.getBankAccount());
+		ediBudgetUse.setBankName(emp.getBankName());		
+		ediMapper.createBudgetUse(ediBudgetUse);
+		log.info("EDI_BUDGET_USE 등록완료");
+			
+	}
+	
+	@Override
+	public void createCoWork(String[] deptCodeArr, String ediCode) {
+
+		for(int i=0 ; i < deptCodeArr.length ; i++) {
+			EdiCoWork ediCoWork = new EdiCoWork();
+			ediCoWork.setEdiCode(ediCode);
+			ediCoWork.setCoWorkDeptCode(deptCodeArr[i]);
+			ediCoWork.setEdiCoWorkComments("");
+			ediCoWork.setEdiCoWorkStatus("0");
+			ediCoWork.setEdiSeq(1);
+			ediMapper.createCoWork(ediCoWork);
+		}
+		log.info("EDI_COWORK_DEPT 등록완료");
+	}
+	
+	@Override
+	public void createInform(String[] deptCodeArr, String ediCode) {
+		
+		for(int i=0 ; i < deptCodeArr.length ; i++) {
+			EdiInform ediInform = new EdiInform();
+			ediInform.setEdiCode(ediCode);
+			ediInform.setInformDeptCode(deptCodeArr[i]);		
+			ediInform.setEdiSeq(1);
+			ediMapper.createInform(ediInform);
+		}
+		log.info("EDI_INFORM_DEPT 등록완료");
 		
 	}
 

@@ -9,7 +9,6 @@
 .virtual-box {
 	margin-bottom: 120px;
 }
-
 th {
 	background-color: #eee;
 }
@@ -19,7 +18,7 @@ th {
 	
 <jsp:include page="../include/header.jsp" />
 
-<div class="virtual-box"></div>
+<div class="virtual-box" style="margin-bottom: 20px;"></div>
 
 <!-- 전자결재 입력 양식 -->
 
@@ -35,7 +34,9 @@ th {
 
 				<!--START 전자결재 입력 폼 -->
 				<form id="edi_write" action="/ediWrite" method="POST">
-		
+				
+					<div id="coWorkDeptCodeArr"></div>
+					<div id="informDeptCodeArr"></div>
 					
 					<table class="table table-bordered">
 						<colgroup>
@@ -130,16 +131,13 @@ th {
 								<th style="vertical-align: middle;">근태일자</th>
 								<td>
 									<div class="input-group date">
-										<input id="workDate" name="workDate" type="date"
-											class="form-control"> 
-										<span class="input-group-addon">
-											<i class="glyphicon glyphicon-calendar"></i> 
-										</span>
+										<input name="ediWorkDate" type="date" class="form-control">
+							            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>										
 									</div>
 								</td>
 								<th style="vertical-align: middle;">근태유형</th>
 								<td>
-									<select class="form-control" name="workType" id="work_type">
+									<select class="form-control" name="ediWorkType" id="work_type">
 										<option value="01">연차계</option>
 										<option value="02">오전반차</option>
 										<option value="03">오후반차</option>
@@ -185,14 +183,18 @@ th {
 										type="text" class="form-control" value="400,000" readonly></td>
 								</tr>
 								<tr>
-									<th style="vertical-align: middle;">입금계좌</th>
+									<th style="vertical-align: middle;">입금계좌</th>									
 									<td><input style="background-color: #eee;" type="text"
 										class="form-control" value="은행명 [110234093945]" readonly></td>
-									<th style="vertical-align: middle;">사용처</th>
-									<td><input type="text" class="form-control"
-										placeholder="ex) 2019/09/18 뉴욕출장"></td>
+									<th style="vertical-align: middle;">환급일자</th>
+									<td>
+										<div class="input-group date">
+											<input name="refundDate" type="date" class="form-control">
+								            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>										
+										</div>
+									</td>
 									<th style="vertical-align: middle;">환급비용</th>
-									<td><input type="text" class="form-control"
+									<td><input name="useBudget" type="text" class="form-control"
 										placeholder="400,000"></td>
 								</tr>
 							</tbody>
@@ -330,6 +332,7 @@ $(function () {
                +'</button>');
         
         $("input[name=coWorkDeptCode]").last().val(deptCode);
+        $("#coWorkDeptCodeArr").append('<input type="hidden" name="coWorkDeptCodeArr" value="'+ deptCode +'"</input> ');  
     });
 
     $("#inform_dept_code_select").change(function () {
@@ -350,11 +353,11 @@ $(function () {
                +'</input>');  
         
         $("input[name=informDeptCode]").last().val(deptCode);
+        $("#informDeptCodeArr").append('<input type="hidden" name="informDeptCodeArr" value="'+ deptCode +'"</input> ');         
         
     });
     
-    $("#ediRegBtn").click(function(e){
-    	e.preventDefault();
+    $("#ediRegBtn").click(function(e){	
     	$("#edi_write").submit();
     });
    
