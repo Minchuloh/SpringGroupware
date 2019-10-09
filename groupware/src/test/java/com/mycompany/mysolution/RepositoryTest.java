@@ -1,6 +1,8 @@
 package com.mycompany.mysolution;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,6 +11,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.mycompany.mysolution.common.searching.Search;
+import com.mycompany.mysolution.edi.domain.EdiCoWork;
+import com.mycompany.mysolution.edi.domain.EdiInform;
+import com.mycompany.mysolution.edi.domain.EdiMaster;
+import com.mycompany.mysolution.edi.domain.EdiSett;
 import com.mycompany.mysolution.edi.repository.EdiMasterMapper;
 import com.mycompany.mysolution.emp.domain.EmpList;
 import com.mycompany.mysolution.emp.repository.EmpListMapper;
@@ -108,4 +114,60 @@ public class RepositoryTest {
 		log.info("count: " + ediMapper.getEdiTotalCount());
 	}
 	
+	
+	@Test
+	public void createEdiTest() {
+		Map<String, Object> ediDatas = new HashMap<>();
+		EdiMaster edi = new EdiMaster();
+		ediDatas.put("edi2", edi);
+		
+		EdiMaster edi2 = (EdiMaster)ediDatas.get("edi2");
+		
+		edi2.setEdiCode(ediMapper.getEdiCodeSeq());
+		edi2.setInpEmpCode("H0002");
+		edi2.setEdiTitle("매퍼 일반품의 입력 테스트2");
+		edi2.setEdiContents("매퍼 일반품의 입력 테스트2");
+		edi2.setEdiType("0001");
+		edi2.setEdiStatus("0");
+		
+		ediMapper.createEdiMaster(edi);
+		log.info("createEdiTest 성공");
+	}
+	
+	@Test
+	public void createEdiSett() {
+		EdiSett ediSett = new EdiSett();
+		ediSett.setEdiCode("E0000001");
+		ediSett.setEdiSeq(1);
+		ediSett.setSettEmpCode("H0001");
+		ediSett.setEdiSettStatus("1");
+		ediSett.setEdiComments("내용 확인하였습니다. 결재합니다.");
+		
+		ediMapper.createEdiSett(ediSett);
+		log.info("createEdiSett 성공");
+	}
+	
+	@Test
+	public void createEdiCoWork() {
+		EdiCoWork ediCoWork = new EdiCoWork();
+		ediCoWork.setEdiCode("E0000001");
+		ediCoWork.setEdiSeq(2);
+		ediCoWork.setCoWorkDeptCode("IT");
+		ediCoWork.setEdiCoWorkStatus("1");
+		ediCoWork.setEdiCoWorkComments("합의하였습니다");
+		
+		ediMapper.createCoWork(ediCoWork);
+		log.info("createEdiCoWork 성공");
+	}
+	
+	@Test
+	public void createEdiInform() {
+		EdiInform ediInform = new EdiInform();
+		ediInform.setEdiCode("E0000001");
+		ediInform.setEdiSeq(1);
+		ediInform.setInformDeptCode("FINANCE");
+		
+		ediMapper.createInform(ediInform);
+		log.info("createEdiInform 성공");		
+	}
 }

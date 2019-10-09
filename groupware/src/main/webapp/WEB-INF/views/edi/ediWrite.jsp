@@ -19,6 +19,8 @@ th {
 	
 <jsp:include page="../include/header.jsp" />
 
+<div class="virtual-box"></div>
+
 <!-- 전자결재 입력 양식 -->
 
 <div class="container">
@@ -32,7 +34,7 @@ th {
 			<div class="card-body">
 
 				<!--START 전자결재 입력 폼 -->
-				<form action="/ediWrite" method="POST">
+				<form id="edi_write" action="/ediWrite" method="POST">
 		
 					
 					<table class="table table-bordered">
@@ -105,7 +107,9 @@ th {
 									<option value="MARKETING">마케팅부</option>
 								</select>
 									<p></p>
-									<div id="co_work_dept_code_result"></div>
+									<div id="co_work_dept_code_result">
+										
+									</div>
 								</td>
 								<th style="vertical-align: middle;">경유부서</th>
 								<td colspan="3">
@@ -117,7 +121,9 @@ th {
 									<option value="MARKETING">마케팅부</option>
 								</select>
 									<p></p>
-									<div id="inform_dept_code_result"></div>
+									<div id="inform_dept_code_result">
+										
+									</div>
 								</td>
 							</tr>
 							<tr id="work_date" style="display: none;">
@@ -197,8 +203,8 @@ th {
 					<br>
 
 					<p style="text-align: center;">
-						<button type="submit" class="btn btn-dark btn-lg">문서등록</button>
-						<button type="button" class="btn btn-default btn-lg">작성취소</button>
+						<button id="ediRegBtn" type="button" class="btn btn-dark btn-lg">문서등록</button>
+						<a id="ediCancelBtn" type="button" href="/ediList/1" class="btn btn-default btn-lg">작성취소</a>
 					</p>
 
 				</form>
@@ -346,6 +352,12 @@ $(function () {
         $("input[name=informDeptCode]").last().val(deptCode);
         
     });
+    
+    $("#ediRegBtn").click(function(e){
+    	e.preventDefault();
+    	$("#edi_write").submit();
+    });
+   
 
 });
     

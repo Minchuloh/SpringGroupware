@@ -111,7 +111,7 @@
 	<id column="DEPT_CODE" property="deptCode"/>
 	<result column="DEPT_NAME" property="deptName"/>
 	<result column="MGR_EMP_CODE" property="mgrEmpCode"/>
-	<result column="INP_DATE" property="inpDate"/>
+	<result column="INP_DATE" property="inpDate"/>	
 	<result column="UPDATE_DATE" property="updateDate"/>
 </resultMap>
 </mapper>

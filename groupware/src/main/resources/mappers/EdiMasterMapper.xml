@@ -3,6 +3,10 @@
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mycompany.mysolution.edi.repository.EdiMasterMapper">
 
+<select id="getEdiCodeSeq" resultType="String">
+	SELECT 'E'||lpad(SEQ_EDI_MASTER.NEXTVAL, 7, '0') FROM DUAL
+</select>
+
 <select id="getEdiTotalCount" resultType="int">
 	SELECT COUNT(*) FROM edi_master
 </select>
@@ -23,6 +27,38 @@
 	  AND (#{ countPerPage } * (#{ page } - 1)) + #{ countPerPage }
 </select>
 
+<insert id="createEdiMaster">
+	INSERT INTO EDI_MASTER (
+	    EDI_CODE, INP_EMP_CODE, EDI_TITLE, EDI_CONTENTS, EDI_TYPE, EDI_STATUS
+	) VALUES (
+	    #{ ediCode }, #{ inpEmpCode }, #{ ediTitle }, #{ ediContents }, #{ ediType }, #{ ediStatus }
+	)
+</insert>
+
+<insert id="createEdiSett">
+	INSERT INTO EDI_SETT (
+	    EDI_CODE, EDI_SEQ, SETT_EMP_CODE, EDI_SETT_STATUS, EDI_COMMENTS
+	) VALUES (
+	     #{ ediCode }, #{ ediSeq }, #{ settEmpCode }, #{ ediSettStatus }, #{ ediComments }
+	)
+</insert>
+
+<insert id="createCoWork">
+	INSERT INTO EDI_COWORK_DEPT (
+	    EDI_CODE, EDI_SEQ, COWORK_DEPT_CODE, EDI_COWORK_STATUS, EDI_COWORK_COMMENTS
+	) VALUES (
+	    #{ ediCode }, #{ ediSeq }, #{ coWorkDeptCode }, #{ ediCoWorkStatus }, #{ ediCoWorkComments }
+	)
+</insert>
+
+<insert id="createInform">
+	INSERT INTO EDI_INFORM_DEPT (
+	    EDI_CODE, EDI_SEQ, INFORM_DEPT_CODE
+	) VALUES (
+	    #{ ediCode }, #{ ediSeq }, #{ informDeptCode }
+	)
+</insert>
+
 <resultMap id="EdiMasterMapping" type="com.mycompany.mysolution.edi.domain.EdiMaster">	
 	<id column="edi_code" property="ediCode"/>
 	<result column="inp_emp_code" property="inpEmpCode"/>
@@ -36,5 +72,32 @@
 	<result column="inp_emp_name" property="inpEmpName"/>
 	<result column="edi_type_name" property="ediTypeName"/>
 	<result column="edi_status_name" property="ediStatusName"/>
+</resultMap>
+
+<resultMap id="EdiSettMapping" type="com.mycompany.mysolution.edi.domain.EdiSett" >
+	<id column="EDI_CODE" property="ediCode"/>
+	<id column="EDI_SEQ" property="ediSeq"/>
+	<id column="SETT_EMP_CODE" property="settEmpCode"/>
+	<result column="EDI_COMMENTS" property="ediComments"/>
+	<result column="INP_DATE" property="inpDate"/>
+	<result column="UPDATE_DATE" property="updateDate"/>
+</resultMap>
+
+<resultMap id="EdiCoWorkMapping" type="com.mycompany.mysolution.edi.domain.EdiCoWork" >
+	<id column="EDI_CODE" property="ediCode"/>
+	<id column="EDI_SEQ" property="ediSeq"/>
+	<id column="COWORK_DEPT_CODE" property="coWorkDeptCode"/>
+	<result column="EDI_COWORK_STATUS" property="ediCoWorkStatus"/>
+	<result column="EDI_COWORK_COMMENTS" property="ediCoWorkComments"/>
+	<result column="INP_DATE" property="inpDate"/>
+	<result column="UPDATE_DATE" property="updateDate"/>
+</resultMap>
+
+<resultMap id="EdiInformMapping" type="com.mycompany.mysolution.edi.domain.EdiInform" >
+	<id column="EDI_CODE" property="ediCode"/>
+	<id column="EDI_SEQ" property="ediSeq"/>
+	<id column="INFORM_DEPT_CODE" property="informDeptCode"/>
+	<result column="INP_DATE" property="inpDate"/>
+	<result column="UPDATE_DATE" property="updateDate"/>
 </resultMap>
 </mapper>

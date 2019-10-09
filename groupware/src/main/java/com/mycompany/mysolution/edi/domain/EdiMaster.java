@@ -20,4 +20,7 @@ public class EdiMaster {
 	Date inpDate;
 	Date updateDate;
 	
+	EdiSett ediSett;
+	EdiCoWork ediCoWork;
+	
 }
