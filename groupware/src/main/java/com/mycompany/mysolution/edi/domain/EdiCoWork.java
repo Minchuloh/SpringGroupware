@@ -13,9 +13,10 @@ public class EdiCoWork {
 	String inpEmpName;
 	String coWorkDeptCode;
 	String coWorkDeptName;
-	String MgrEmpCode;
-	String MgrEmpName;
+	String mgrEmpCode;
+	String mgrEmpName;
 	String ediCoWorkStatus;
+	String ediCoWorkStatusName;
 	String ediCoWorkComments;
 	Date inpDate;
 	Date updateDate;

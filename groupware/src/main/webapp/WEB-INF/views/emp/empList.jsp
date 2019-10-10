@@ -97,7 +97,7 @@
             </div>
         </div>
         <div class="offset-md-1 col-md-2">
-            <a class="btn btn-secondary" href="/emp">사원등록</a>
+            <a class="btn btn-secondary" href="/empWrite">사원등록</a>
         </div>
     </div>
 	
@@ -112,9 +112,9 @@ $(function() {
 	//게시글 처리 알림창 띄우기
 	const result = "${message}";
 	if(result === 'regSuccess') {
-		alert("게시글 등록이 완료되었습니다.");
+		alert("신규사원 등록이 완료되었습니다.");
 	} else if(result === 'delSuccess') {
-		alert("게시글 삭제가 완료되었습니다.");
+		alert("사원정보 삭제가 완료되었습니다.");
 	}
 	
 	//검색창 엔터키 이벤트

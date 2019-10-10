@@ -21,9 +21,14 @@ public interface EmpListMapper {
 	
 	List<EmpList> getEmpList();
 	EmpList getEmp(String empCode);
+	EmpList getEmpBySessionId(String sessionId);
 	List<EmpList> getEmpListWithPaging(Search paging);
 	
 	void modifyEmpName(EmpList emp);
+	
+	void modifyLastLoginTime(String empCode);
+	
+	void keepLogin(Map<String, Object> datas);
 	
 	void deleteEmp(String empCode);
 	

@@ -2,7 +2,6 @@ package com.mycompany.mysolution.interceptor;
 
 import java.io.IOException;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -10,8 +9,11 @@ import javax.servlet.http.HttpSession;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import com.mycompany.mysolution.mvcuser.domain.MvcUser;
+import com.mycompany.mysolution.emp.domain.EmpList;
 
+import lombok.extern.log4j.Log4j;
+
+@Log4j
 public class LoginInterceptor extends HandlerInterceptorAdapter implements SessionNames {
 
 	@Override
@@ -33,24 +35,11 @@ public class LoginInterceptor extends HandlerInterceptorAdapter implements Sessi
 		HttpSession session = request.getSession();
 		
 		//로그인이 성공한 이후 처리 로직
-		MvcUser user = (MvcUser)modelAndView.getModel().get("user");
+		EmpList emp = (EmpList)modelAndView.getModel().get("emp");
 		
-		if(user != null) {
-			System.out.println("로그인 성공!");
-			session.setAttribute(LOGIN, user);
-			
-			//자동로그인 처리
-			if(request.getParameter("isAutoLogin") != null) {
-				System.out.println("자동 로그인 체크함!!");
-				//자동로그인 쿠키 생성 : 쿠키에 로그인 당시의 고유 세션키(ID)를 저장.
-				Cookie loginCookie = new Cookie("loginCookie", session.getId());
-				//쿠키 정보 설정
-				loginCookie.setPath("/");
-				loginCookie.setMaxAge((int)LIMIT_TIME); //초단위
-				
-				//클라이언트에 쿠키 저장.
-				response.addCookie(loginCookie);
-			}
+		if(emp != null) {
+			log.info("로그인 성공!");
+			session.setAttribute(LOGIN, emp);
 			
 			redirectAttempted(response, session);
 		}
@@ -62,10 +51,6 @@ public class LoginInterceptor extends HandlerInterceptorAdapter implements Sessi
 		if(attempted != null) {
 			response.sendRedirect(attempted);
 			session.removeAttribute(ATTEMPTED);
-		} else if(session.getAttribute("check") != null) {
-			//댓글 로그인상황
-			response.sendRedirect("/empList/" + session.getAttribute("check"));
-			session.removeAttribute("check");
 		} else {			
 			response.sendRedirect("/");
 		}

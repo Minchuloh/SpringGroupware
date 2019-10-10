@@ -15,8 +15,8 @@
 
 <!-- 신규사원 입력 양식 -->
 
-<div class="virtual-box"></div>
-z
+<div style="margin-bottom: 0px;" class="virtual-box"></div>
+
 <div class="container">
 	<div class="row">
 		<div class="offset-md-2 col-md-4">
@@ -25,7 +25,7 @@ z
 					<h2><span style="color: gray;">MyCompany</span> 신규사원 등록화면</h2>
 				</div>
 				<div class="card-body">
-					<form action="/emp" name="signup" id="signUpForm" method="post"	style="margin-bottom: 0;">						
+					<form action="/empWrite" name="signup" id="signUpForm" method="post"	style="margin-bottom: 0;">						
 						<table style="cellpadding: 0; cellspacing: 0; margin: 0 auto; width: 100%">
 						
 							<tr>	<!-- 이름 입력 시작 -->

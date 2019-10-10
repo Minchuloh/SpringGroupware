@@ -1,5 +1,6 @@
 package com.mycompany.mysolution.emp.service;
 
+import java.util.Date;
 import java.util.List;
 
 import com.mycompany.mysolution.common.searching.Search;
@@ -14,11 +15,17 @@ public interface EmpService {
 	Integer getTotalCount(Search paging);
 	
 	List<EmpList> getEmpList();
+	EmpList getBankInfo(String empCode);
 	EmpList getEmp(String empCode);
-	List<EmpList> getEmpListWithPaging(Search paging);
+	EmpList getEmpBySessionId(String sessionId);
+	List<EmpList> getEmpListWithPaging(Search paging);	
 	
 	void modifyEmpName(EmpList emp);
 	
+	void modifyLastLoginTime(String empCode);
+	
 	void deleteEmp(String empCode);
+	
+	void keepLogin(String sessionId, Date limitTime, String account);
 	
 }

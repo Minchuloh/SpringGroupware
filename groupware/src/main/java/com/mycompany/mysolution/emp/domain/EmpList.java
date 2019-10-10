@@ -15,6 +15,7 @@ public class EmpList {
 	String email;
 	String phone;
 	String deptCode;
+	String deptName;
 	String position;
 	Integer salary;
 	String bankName;
@@ -26,6 +27,7 @@ public class EmpList {
 	Date fireDate;
 	String sessionId;
 	String limitTime;
+	String lastLoginAt;
 	Date inpDate;
 	Date updateDate;
 	

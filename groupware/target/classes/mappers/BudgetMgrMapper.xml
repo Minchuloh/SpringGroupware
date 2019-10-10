@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mycompany.mysolution.budget.repository.BudgetMgrMapper">
+
+<select id="getAvailableAmt" resultMap="budgetMgrMapping">
+	SELECT PLAN_TOTAL_BUDGET, PLAN_USE_BUDGET, (PLAN_TOTAL_BUDGET - PLAN_USE_BUDGET) AS AVAILABLE_BUDGET
+	FROM BUDGET_MGR 
+	WHERE 1=1
+	AND   PLAN_YM = (SELECT TO_CHAR(sysdate, 'YYYYMM') FROM DUAL)
+	AND   DEPT_CODE = #{ deptCode }
+</select>
+
+<update id="updateBudgetMgr">
+	UPDATE BUDGET_MGR
+	SET PLAN_USE_BUDGET = PLAN_USE_BUDGET + #{ useBudget }
+	WHERE PLAN_YM = (SELECT TO_CHAR(sysdate, 'YYYYMM') FROM DUAL)
+	AND   DEPT_CODE = #{ deptCode } 
+</update>
+
+<resultMap id="budgetMgrMapping" type="com.mycompany.mysolution.budget.domain.BudgetMgr">	
+	<id column="PLAN_YM" property="planYm"/>
+	<id column="DEPT_CODE" property="deptCode"/>
+	<result column="PLAN_TOTAL_BUDGET" property="planTotalBudget"/>
+	<result column="PLAN_USE_BUDGET" property="planUseBudget"/>
+	<result column="AVAILABLE_BUDGET" property="availableBudget"/>
+	<result column="inp_date" property="inpDate"/>
+	<result column="update_date" property="updateDate"/>
+</resultMap>
+
+</mapper>

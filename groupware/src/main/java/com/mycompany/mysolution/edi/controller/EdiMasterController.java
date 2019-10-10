@@ -4,7 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,13 +16,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.mycompany.mysolution.budget.domain.BudgetMgr;
+import com.mycompany.mysolution.budget.service.BudgetMgrService;
 import com.mycompany.mysolution.common.paging.PageCreator;
 import com.mycompany.mysolution.common.searching.Search;
 import com.mycompany.mysolution.edi.domain.EdiBudgetUse;
+import com.mycompany.mysolution.edi.domain.EdiCoWork;
+import com.mycompany.mysolution.edi.domain.EdiInform;
 import com.mycompany.mysolution.edi.domain.EdiMaster;
 import com.mycompany.mysolution.edi.domain.EdiSett;
 import com.mycompany.mysolution.edi.domain.EdiWorkDay;
 import com.mycompany.mysolution.edi.service.EdiMasterService;
+import com.mycompany.mysolution.emp.domain.EmpList;
+import com.mycompany.mysolution.emp.service.EmpService;
 
 import lombok.extern.log4j.Log4j;
 
@@ -28,6 +38,12 @@ public class EdiMasterController {
 	
 	@Autowired
 	private EdiMasterService ediService;
+	
+	@Autowired
+	private BudgetMgrService budgetMgrService;
+	
+	@Autowired
+	private EmpService empService;
 	
 	@GetMapping("/ediList/{pageNum}")
 	public ModelAndView getEdiMasterAll(ModelAndView mv, @PathVariable Integer pageNum, 
@@ -48,20 +64,34 @@ public class EdiMasterController {
 	}
 	
 	@GetMapping("/ediWrite")
-	public ModelAndView createEdiForm(ModelAndView mv) {
+	public ModelAndView createEdiForm(HttpSession session, ModelAndView mv) {
+		
+		//로그인 사원정보 세팅
+		EmpList emp = empService.getEmpBySessionId(session.getId());
+		
+		//비용환급 정보 세팅
+		BudgetMgr budgetMgr = budgetMgrService.getAvailableAmt(emp.getDeptCode());		
+		
+		mv.addObject("budgetMgr", budgetMgr);		
+		mv.addObject("emp", emp);
 		mv.setViewName("edi/ediWrite");
+		
 		return mv;
 	}
 	
+	@Transactional
 	@PostMapping("/ediWrite")
-	public ModelAndView createEdi(ModelAndView mv, EdiMaster edi, EdiSett ediSett,	
-			String[] coWorkDeptCodeArr, String[] informDeptCodeArr, EdiWorkDay ediWorkDay, EdiBudgetUse ediBudgetUse) {		
+	public ModelAndView createEdi(
+				ModelAndView mv, EdiMaster edi, EdiSett ediSett,	
+				String[] coWorkDeptCodeArr, String[] informDeptCodeArr, 
+				EdiWorkDay ediWorkDay, EdiBudgetUse ediBudgetUse, BudgetMgr budgetMgr) {		
 		
 		Map<String, Object> ediDatas = new HashMap<>();
 		ediDatas.put("edi", edi);
 		ediDatas.put("ediSett", ediSett);
 		ediDatas.put("ediWorkDay", ediWorkDay);
 		ediDatas.put("ediBudgetUse", ediBudgetUse);
+		ediDatas.put("budgetMgr", budgetMgr);
 		
 		if (edi.getEdiType().equals("0001")) {
 			ediService.createEdiOrdinary(ediDatas);
@@ -81,7 +111,7 @@ public class EdiMasterController {
 				ediService.createInform(informDeptCodeArr, edi.getEdiCode());;
 			}
 			log.info("근태신청 등록 완료: " + edi.getEdiCode());
-		} else {			
+		} else {
 			ediService.createEdiRefund(ediDatas);
 			if(coWorkDeptCodeArr != null) {
 				ediService.createCoWork(coWorkDeptCodeArr, edi.getEdiCode());;
@@ -102,9 +132,37 @@ public class EdiMasterController {
 		return mv;
 	}
 	
-	@GetMapping("/ediContent")
-	public ModelAndView contentEdi(ModelAndView mv) {
+	@GetMapping("/ediList/ediContent")
+	public ModelAndView contentEdi(ModelAndView mv, HttpSession session, String ediCode) {
+		
+		EmpList emp = empService.getEmpBySessionId(session.getId());
+		mv.addObject("emp", emp);
+		
+		EdiMaster edi = ediService.getEdiMaster(ediCode);
+		List<EdiSett> sett = ediService.getEdiSett(ediCode);
+		List<EdiCoWork> coWork = ediService.getCoWork(ediCode);
+		List<EdiInform> inform = ediService.getInform(ediCode);
+		EdiWorkDay workDay = ediService.getWorkDay(ediCode);
+		EdiBudgetUse refund = ediService.getRefund(ediCode);
+		
+		mv.addObject("edi", edi);
+		mv.addObject("sett", sett);
+		mv.addObject("coWork", coWork);
+		mv.addObject("inform", inform);
+		mv.addObject("workDay", workDay);
+		mv.addObject("refund", refund);		
 		mv.setViewName("edi/ediContent");
+		
 		return mv;
+	}
+	
+	@DeleteMapping("/ediList/{ediCode}")
+	public String deleteEdi(@PathVariable String ediCode) {
+		
+		log.info("전자결재 삭제 요청: " + ediCode);
+		
+		ediService.deleteEdi(ediCode);
+
+		return "delSuccess";
 	}
 }

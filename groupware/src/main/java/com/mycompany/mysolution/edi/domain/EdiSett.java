@@ -8,7 +8,7 @@ import lombok.Data;
 public class EdiSett {
 	
 	String ediCode;
-	Integer ediSeq;
+	int ediSeq;
 	String settEmpCode;
 	String settEmpName;
 	String settDeptCode;

@@ -7,9 +7,12 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.mycompany.mysolution.budget.domain.BudgetMgr;
+import com.mycompany.mysolution.budget.repository.BudgetMgrMapper;
 import com.mycompany.mysolution.common.searching.Search;
 import com.mycompany.mysolution.edi.domain.EdiBudgetUse;
 import com.mycompany.mysolution.edi.domain.EdiCoWork;
@@ -34,6 +37,9 @@ public class RepositoryTest {
 	
 	@Autowired
 	private EmpListMapper empMapper;
+	
+	@Autowired
+	private BudgetMgrMapper budgetMgrMapper;
 	
 	@Test
 	public void getEdiTest() {
@@ -224,6 +230,31 @@ public class RepositoryTest {
 	@Test
 	public void getEdiInform() {
 		log.info(ediMapper.getEdiInform("E0000082"));
+	}
+	
+	@Test
+	public void getRefund() {
+		log.info(ediMapper.getRefund("E0000128"));
+	}
+	
+	@Test
+	public void getAvailable() {
+		log.info(budgetMgrMapper.getAvailableAmt("IT"));
+	}
+	
+	@Test
+	public void budgetUpdate() {
+		BudgetMgr budgetMgr = new BudgetMgr();
+		budgetMgr.setDeptCode("IT");
+		budgetMgr.setUseBudget(500L);
+		budgetMgrMapper.updateBudgetMgr(budgetMgr);
+		log.info("budgetUpdate 완료");
+	}
+	
+	@Test
+	public void getEdiMasterChk() {
+		int cntChk = ediMapper.getEdiMasterChk("E0000125");
+		log.info("getEdiMasterChk: " + cntChk);
 	}
 	
 }

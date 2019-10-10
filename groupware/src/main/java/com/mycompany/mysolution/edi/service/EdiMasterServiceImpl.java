@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.mycompany.mysolution.budget.domain.BudgetMgr;
+import com.mycompany.mysolution.budget.repository.BudgetMgrMapper;
 import com.mycompany.mysolution.common.searching.Search;
 import com.mycompany.mysolution.edi.domain.EdiBudgetUse;
 import com.mycompany.mysolution.edi.domain.EdiCoWork;
@@ -30,11 +32,42 @@ public class EdiMasterServiceImpl implements EdiMasterService {
 	@Autowired
 	EmpListMapper empMapper;
 	
+	@Autowired
+	BudgetMgrMapper budgetMgrMapper;
+	
 	@Override
-	public List<EdiMaster> getEdiMasterAll(Search paging) {	
-				
-		return ediMapper.getEdiMasterAll(paging);
-		
+	public List<EdiMaster> getEdiMasterAll(Search paging) {			
+		return ediMapper.getEdiMasterAll(paging);	
+	}
+	
+	@Override
+	public EdiMaster getEdiMaster(String ediCode) {		
+		return ediMapper.getEdiMaster(ediCode);
+	}
+	
+	@Override
+	public List<EdiSett> getEdiSett(String ediCode) {
+		return ediMapper.getEdiSett(ediCode);
+	}
+	
+	@Override
+	public List<EdiCoWork> getCoWork(String ediCode) {
+		return ediMapper.getEdiCoWork(ediCode);
+	}
+	
+	@Override
+	public List<EdiInform> getInform(String ediCode) {		
+		return ediMapper.getEdiInform(ediCode);
+	}
+	
+	@Override
+	public EdiWorkDay getWorkDay(String ediCode) {
+		return ediMapper.getEdiWorkDay(ediCode);
+	}
+	
+	@Override
+	public EdiBudgetUse getRefund(String ediCode) {
+		return ediMapper.getRefund(ediCode);
 	}
 
 	@Override
@@ -64,6 +97,7 @@ public class EdiMasterServiceImpl implements EdiMasterService {
 		
 	}
 	
+	@Transactional
 	@Override
 	public void createEdiWorkDay(Map<String, Object> ediDatas) {
 		
@@ -92,6 +126,7 @@ public class EdiMasterServiceImpl implements EdiMasterService {
 		
 	}
 	
+	@Transactional
 	@Override
 	public void createEdiRefund(Map<String, Object> ediDatas) {
 		
@@ -109,11 +144,10 @@ public class EdiMasterServiceImpl implements EdiMasterService {
 		ediSett.setEdiSettStatus("0");
 		ediSett.setEdiComments("");
 		ediMapper.createEdiSett(ediSett);		
-		log.info("EDI_SETT 등록완료");
+		log.info("EDI_SETT 등록완료");	
 		
 		//EDI_BUDGET_USE INSERT LOGIC			
-		EdiBudgetUse ediBudgetUse = (EdiBudgetUse)ediDatas.get("ediBudgetUse");	
-		
+		EdiBudgetUse ediBudgetUse = (EdiBudgetUse)ediDatas.get("ediBudgetUse");			
 		//작성자 기준 은행정보 조회
 		EmpList emp = empMapper.getBankInfo(edi.getInpEmpCode());		
 		
@@ -123,7 +157,11 @@ public class EdiMasterServiceImpl implements EdiMasterService {
 		ediBudgetUse.setBankName(emp.getBankName());		
 		ediMapper.createBudgetUse(ediBudgetUse);
 		log.info("EDI_BUDGET_USE 등록완료");
-			
+		
+		//BUDGET_MGR UPDATE LOGIC
+		BudgetMgr budgetMgr = (BudgetMgr)ediDatas.get("budgetMgr");
+		budgetMgrMapper.updateBudgetMgr(budgetMgr);
+		log.info("BUDGET_MGR 업데이트 완료");
 	}
 	
 	@Override
@@ -152,6 +190,41 @@ public class EdiMasterServiceImpl implements EdiMasterService {
 			ediMapper.createInform(ediInform);
 		}
 		log.info("EDI_INFORM_DEPT 등록완료");
+		
+	}
+	
+	@Transactional
+	@Override
+	public void deleteEdi(String ediCode) {	
+		
+		if (ediMapper.getEdiInformChk(ediCode) >= 1) {
+			ediMapper.deleteEdiInform(ediCode);
+		}
+		if (ediMapper.getEdiCoWorkChk(ediCode) >= 1) {
+			ediMapper.deleteEdiCoWork(ediCode);
+		}
+		if (ediMapper.getRefundChk(ediCode) >= 1) {
+			EdiBudgetUse budgetUse = ediMapper.getRefund(ediCode);
+			
+			BudgetMgr budgetMgr = new BudgetMgr();
+			budgetMgr.setDeptCode(budgetUse.getDeptCode());
+			budgetMgr.setUseBudget(budgetUse.getUseBudget() * (-1));	
+			
+			budgetMgrMapper.updateBudgetMgr(budgetMgr);
+			ediMapper.deleteRefund(ediCode);			
+		}
+		if (ediMapper.getEdiWorkDayChk(ediCode) >= 1) {
+			ediMapper.deleteEdiWorkDay(ediCode);
+		}		
+		if (ediMapper.getEdiSettChk(ediCode) >= 1) {
+			ediMapper.deleteEdiSett(ediCode);
+		}
+		
+		if (ediMapper.getEdiMasterChk(ediCode) >= 1) {
+			ediMapper.deleteEdiMaster(ediCode);
+		} else {
+			log.info("EdiMaster 삭제할 데이터 없음");
+		}	
 		
 	}
 

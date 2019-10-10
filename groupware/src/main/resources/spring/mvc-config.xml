@@ -41,5 +41,6 @@
 	<!-- 스프링 컨테이너에 마이바티스 매퍼를 빈으로 등록 -->
 	<mybatis-spring:scan base-package="com.mycompany.mysolution.edi.repository" />
 	<mybatis-spring:scan base-package="com.mycompany.mysolution.emp.repository" />
+	<mybatis-spring:scan base-package="com.mycompany.mysolution.budget.repository" />
 		
 </beans>

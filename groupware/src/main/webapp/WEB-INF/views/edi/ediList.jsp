@@ -97,10 +97,10 @@ th {
                 <thead class="thead-dark">
                     <tr>
                         <th>문서번호</th>
-                        <th>작성자</th>
-                        <th>문서종류</th>
-                        <th>작성일</th>
                         <th>제목</th>
+                        <th>작성자</th>
+                        <th>문서종류</th>                        
+                        <th>작성일</th>                        
                         <th>결재상태</th>
                     </tr>
                 </thead>
@@ -108,12 +108,12 @@ th {
                 <c:forEach var="edi" items="${ediList}" >
                     <!--게시물들이 들어갈 공간-->
                     <tr>
-                        <td>${edi.ediCode}</td>
-                        <td>${edi.inpEmpName}</td>	                    
-                        <td>${edi.ediTypeName}</td>                                      	
+                        <td><a class="article-link" href="ediContent?ediCode=${edi.ediCode}">${edi.ediCode}</a></td>
                         <td>${edi.ediTitle}</td> 
+                        <td>${edi.inpEmpName}</td>	                    
+                        <td>${edi.ediTypeName}</td>                                 	
                         <td>
-                            <fmt:formatDate value="${edi.inpDate}" pattern="yyyy년 MM월 dd일 a hh:mm" />	                    
+                            <fmt:formatDate value="${edi.inpDate}" pattern="yyyy년 MM월 dd일" />	                    
                         </td> 
                         <td>${edi.ediStatusName}</td>
                     </tr>

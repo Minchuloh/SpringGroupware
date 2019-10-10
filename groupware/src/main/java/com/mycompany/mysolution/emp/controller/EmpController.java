@@ -2,6 +2,8 @@ package com.mycompany.mysolution.emp.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,13 +31,17 @@ public class EmpController {
 	
 	@GetMapping("/empList/{pageNum}")
 	public ModelAndView getEmpList(ModelAndView mv, @PathVariable Integer pageNum, 
-				@ModelAttribute("search") Search paging) {
+				@ModelAttribute("search") Search paging, HttpSession session) {
+		
+		EmpList emp = empService.getEmpBySessionId(session.getId());
+		mv.addObject("emp", emp);
 		
 		paging.setPage(pageNum);
 		List<EmpList> empList = empService.getEmpListWithPaging(paging);
 		
 		Integer totalCount = empService.getTotalCount(paging);
 		PageCreator pageCreator = new PageCreator(pageNum, totalCount);				
+		
 		
 		mv.addObject("empList", empList);
 		mv.addObject("pageCreator", pageCreator);		
@@ -61,12 +67,17 @@ public class EmpController {
 		}
 	}
 	
-	@GetMapping("/emp")
-	public ModelAndView createEmp() {		
-		return new ModelAndView("emp/empWrite");
+	@GetMapping("/empWrite")
+	public ModelAndView createEmp(HttpSession session, ModelAndView mv) {
+		
+		EmpList emp = empService.getEmpBySessionId(session.getId());
+		mv.addObject("emp", emp);
+		mv.setViewName("emp/empWrite");
+		
+		return mv;
 	}
 	
-	@PostMapping("/emp")
+	@PostMapping("/empWrite")
 	public ModelAndView createEmp(EmpList emp, RedirectAttributes ra) {
 		
 		log.info("클라이언트에서 전달된 emp: " + emp);

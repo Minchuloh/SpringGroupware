@@ -14,30 +14,34 @@ public interface EdiMasterMapper {
 	
 	public Integer getEdiTotalCount();
 	
-	public List<EdiMaster> getEdiMasterAll(Search paging);
-	
-	public EdiMaster getEdiMaster(String ediCode);
-	
-	public List<EdiSett> getEdiSett(String ediCode);
-	
-	public EdiWorkDay getEdiWorkDay(String ediCode);
-	
-	public List<EdiCoWork> getEdiCoWork(String ediCode);
-	
-	public List<EdiInform> getEdiInform(String ediCode);
-	
+	public List<EdiMaster> getEdiMasterAll(Search paging);	
+	public EdiMaster getEdiMaster(String ediCode);	
+	public List<EdiSett> getEdiSett(String ediCode);	
+	public EdiWorkDay getEdiWorkDay(String ediCode);	
+	public EdiBudgetUse getRefund(String ediCode);
+	public List<EdiCoWork> getEdiCoWork(String ediCode);	
+	public List<EdiInform> getEdiInform(String ediCode);	
 	public String getEdiCodeSeq();
 	
-	public void createEdiMaster(EdiMaster edi);
-	
-	public void createEdiSett(EdiSett ediSett);
-	
-	public void createCoWork(EdiCoWork ediCoWork);
-	
-	public void createInform(EdiInform ediInform);
-	
-	public void createWorkDay(EdiWorkDay ediWorkDay);
-	
+	public void createEdiMaster(EdiMaster edi);	
+	public void createEdiSett(EdiSett ediSett);	
+	public void createCoWork(EdiCoWork ediCoWork);	
+	public void createInform(EdiInform ediInform);	
+	public void createWorkDay(EdiWorkDay ediWorkDay);	
 	public void createBudgetUse(EdiBudgetUse ediBudgetUse);
+	
+	public void deleteEdiMaster(String ediCode);	
+	public void deleteEdiSett(String ediCode);	
+	public void deleteEdiWorkDay(String ediCode);
+	public void deleteRefund(String ediCode);
+	public void deleteEdiCoWork(String ediCode);
+	public void deleteEdiInform(String ediCode);
+	
+	public int getEdiMasterChk(String ediCode);
+	public int getEdiSettChk(String ediCode);
+	public int getEdiWorkDayChk(String ediCode);
+	public int getRefundChk(String ediCode);
+	public int getEdiCoWorkChk(String ediCode);
+	public int getEdiInformChk(String ediCode);
 	
 }

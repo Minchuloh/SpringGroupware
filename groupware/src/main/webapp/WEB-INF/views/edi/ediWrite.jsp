@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -33,7 +35,7 @@ th {
 			<div class="card-body">
 
 				<!--START 전자결재 입력 폼 -->
-				<form id="edi_write" action="/ediWrite" method="POST">
+				<form id="edi_write" action="/ediWrite" method="POST">					
 				
 					<div id="coWorkDeptCodeArr"></div>
 					<div id="informDeptCodeArr"></div>
@@ -55,13 +57,14 @@ th {
 							<tr>
 								<th style="vertical-align: middle;">작성자</th>								
 								<td>
+									<input type="hidden" name="deptCode" value="${emp.deptCode}">
 									<input style="background-color: #eee;" type="text"
-										class="form-control" value="오민철[IT개발부]" readonly>
-									<input type="hidden" name="inpEmpCode" value="H0001">
+										class="form-control" value="${emp.empName} [${emp.deptName}]" readonly>
+									<input type="hidden" name="inpEmpCode" value="${emp.empCode}">
 								</td>
 								<th style="vertical-align: middle;">결재자</th>
 								<td>
-									<input type="hidden" name="settEmpCode" value="H0002">
+									<input type="hidden" name="settEmpCode" value="H0077">
 									<input type="button" id="edi_setter_main" 
 										style="background-color: #eee; text-align: left;"
 										class="form-control" data-target="#edi_setter" data-toggle="modal">
@@ -173,19 +176,16 @@ th {
 							<tbody>
 								<tr>
 									<th style="vertical-align: middle;">계획예산</th>
-									<td><input style="background-color: #eee;" type="text"
-										class="form-control" value="1,000,000" readonly></td>
+									<td>${budgetMgr.planTotalBudget}</td>
 									<th style="vertical-align: middle;">사용예산</th>
-									<td><input style="background-color: #eee;" type="text"
-										class="form-control" value="600,000" readonly></td>
+									<td>${budgetMgr.planUseBudget}</td>
 									<th style="vertical-align: middle;">가용예산</th>
-									<td><input style="background-color: rgb(200, 243, 241);"
-										type="text" class="form-control" value="400,000" readonly></td>
+									<td>${budgetMgr.availableBudget}</td>
 								</tr>
 								<tr>
 									<th style="vertical-align: middle;">입금계좌</th>									
 									<td><input style="background-color: #eee;" type="text"
-										class="form-control" value="은행명 [110234093945]" readonly></td>
+										class="form-control" value="${emp.bankName} [${emp.bankAccount}]" readonly></td>
 									<th style="vertical-align: middle;">환급일자</th>
 									<td>
 										<div class="input-group date">
@@ -195,7 +195,7 @@ th {
 									</td>
 									<th style="vertical-align: middle;">환급비용</th>
 									<td><input name="useBudget" type="text" class="form-control"
-										placeholder="400,000"></td>
+										placeholder="가용예산 범위 내 입력"></td>
 								</tr>
 							</tbody>
 						</table>

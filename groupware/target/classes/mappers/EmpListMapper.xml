@@ -42,6 +42,12 @@
 	SELECT * FROM emp_list WHERE emp_code = #{empCode}
 </select>
 
+<select id="getEmpBySessionId" resultMap="EmpListMapping">
+	SELECT a.*, b.dept_name
+	FROM emp_list a, dept_list b
+	WHERE a.session_id = #{sessionId}
+</select>
+
 <select id="getEmpListWithPaging" resultMap="EmpListMapping">
 	SELECT EMP_CODE, EMP_NAME, EMAIL, PHONE, DEPT_CODE, DEPT_NAME, POSITION, SALARY, BANK_NAME, BANK_ACCOUNT, 
 		   PHOTO, FIRE_YN, FIRE_DATE, HIRE_DATE, INP_DATE, UPDATE_DATE 
@@ -77,6 +83,20 @@
 	DELETE FROM emp_list WHERE emp_code = #{empCode}
 </delete>
 
+<update id="modifyLastLoginTime">
+	UPDATE emp_list 
+	SET last_login_at = sysdate 
+	WHERE emp_code = #{empCode}
+</update>
+
+<update id="keepLogin">
+	UPDATE emp_list 
+	SET session_id = #{sessionId},
+	    limit_time = #{limitTime} 
+	WHERE emp_code = #{empCode}
+</update>
+
+
 <!-- 중복되는 동적 SQL구문 처리 -->
 <sql id="search">
 	<if test="condition != null">
@@ -99,6 +119,7 @@
 	<result column="EMAIL" property="email"/>
 	<result column="PHONE" property="phone"/>
 	<result column="DEPT_CODE" property="deptCode"/>
+	<result column="DEPT_NAME" property="deptName"/>
 	<result column="POSITION" property="position"/>
 	<result column="SALARY" property="salary"/>
 	<result column="BANK_NAME" property="bankName"/>
@@ -109,6 +130,7 @@
 	<result column="FIRE_DATE" property="fireDate"/>
 	<result column="SESSION_ID" property="sessionId"/>
 	<result column="LIMIT_TIME" property="limitTime"/>
+	<result column="LAST_LOGIN_AT" property="lastLoginAt"/>
 	<result column="INP_DATE" property="inpDate"/>
 	<result column="UPDATE_DATE" property="updateDate"/>
 	<collection property="deptList" resultMap="DeptListMapping"/>
