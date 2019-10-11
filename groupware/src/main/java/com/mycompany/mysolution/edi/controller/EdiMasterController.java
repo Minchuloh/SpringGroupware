@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -46,11 +47,23 @@ public class EdiMasterController {
 	private EmpService empService;
 	
 	@GetMapping("/ediList/{pageNum}")
-	public ModelAndView getEdiMasterAll(ModelAndView mv, @PathVariable Integer pageNum, 
-						@ModelAttribute("search") Search paging) {
+	public ModelAndView getEdiMasterAll(
+				ModelAndView mv, HttpSession session, @PathVariable Integer pageNum, 
+				@ModelAttribute("search") Search paging, EdiMaster edi
+					) {
 		
-		paging.setPage(pageNum);
-		List<EdiMaster> ediList = ediService.getEdiMasterAll(paging);
+		//세션정보 전달
+		EmpList emp = empService.getEmpBySessionId(session.getId());
+		mv.addObject("emp", emp);	
+		
+		//페이지세팅
+		paging.setPage(pageNum);	
+		
+		//전자결재 검색
+		List<EdiMaster> ediList = 
+				ediService.getEdiMasterAll(edi, paging.getPage(), paging.getCountPerPage());
+		
+		log.info("검색단 조회 : " + ediList);
 		
 		Integer totalCount = ediService.getEdiTotalCount();
 		PageCreator pageCreator = new PageCreator(pageNum, totalCount);
@@ -68,6 +81,8 @@ public class EdiMasterController {
 		
 		//로그인 사원정보 세팅
 		EmpList emp = empService.getEmpBySessionId(session.getId());
+		
+		log.info("emp : " + emp);
 		
 		//비용환급 정보 세팅
 		BudgetMgr budgetMgr = budgetMgrService.getAvailableAmt(emp.getDeptCode());		
@@ -126,8 +141,27 @@ public class EdiMasterController {
 		return mv;
 	}
 	
-	@GetMapping("/ediSett")
-	public ModelAndView settEdi(ModelAndView mv) {
+	@GetMapping("/ediSett/{ediCode}")
+	public ModelAndView settEdi(ModelAndView mv, HttpSession session,  @PathVariable String ediCode) {
+		
+		EmpList emp = empService.getEmpBySessionId(session.getId());
+		mv.addObject("emp", emp);
+		
+		EdiMaster edi = ediService.getEdiMaster(ediCode);
+		List<EdiSett> sett = ediService.getEdiSett(ediCode);
+		List<EdiCoWork> coWork = ediService.getCoWork(ediCode);
+		List<EdiInform> inform = ediService.getInform(ediCode);
+		EdiWorkDay workDay = ediService.getWorkDay(ediCode);
+		EdiBudgetUse refund = ediService.getRefund(ediCode);
+		
+		mv.addObject("edi", edi);
+		mv.addObject("sett", sett);
+		mv.addObject("coWork", coWork);
+		mv.addObject("inform", inform);
+		mv.addObject("workDay", workDay);
+		mv.addObject("refund", refund);		
+		mv.setViewName("edi/ediContent");
+		
 		mv.setViewName("edi/ediSett");
 		return mv;
 	}
@@ -156,7 +190,7 @@ public class EdiMasterController {
 		return mv;
 	}
 	
-	@DeleteMapping("/ediList/{ediCode}")
+	@DeleteMapping("/ediList/del/{ediCode}")
 	public String deleteEdi(@PathVariable String ediCode) {
 		
 		log.info("전자결재 삭제 요청: " + ediCode);
@@ -165,4 +199,17 @@ public class EdiMasterController {
 
 		return "delSuccess";
 	}
+	
+	@PostMapping("/ediList/cowork")
+	public String coWorkEdi(@RequestBody EdiCoWork ediCoWork) {
+		
+		log.info("전자결재 합의 요청: " + ediCoWork);
+		
+		ediService.coWorkEdi(ediCoWork);
+
+		return "cowork Success";
+	}
+	
+	
+	
 }

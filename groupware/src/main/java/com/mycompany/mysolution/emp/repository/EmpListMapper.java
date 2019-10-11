@@ -31,5 +31,7 @@ public interface EmpListMapper {
 	void keepLogin(Map<String, Object> datas);
 	
 	void deleteEmp(String empCode);
+
+	List<EmpList> getEmpByEmpName(String empName);
 	
 }

@@ -15,13 +15,20 @@
 th {
 	background-color: #eee;
 }
+td {
+	vertical-align: middle !important;
+}
+.article-link {
+		font-weight: 700;
+		color: brown;
+	}
 </style>
 </head>
 <body>
 	
 <jsp:include page="../include/header.jsp" />
 
-<div class="virtual-box" style="margin-bottom: 20px;"></div>
+<div class="virtual-box"></div>
 
 <!-- 전자결재 상세 화면 -->
 
@@ -42,10 +49,10 @@ th {
 			<h4>문서내용</h4>
 			<table class="table table-bordered">
 				<colgroup>
-					<col class="col-md-2">
-					<col class="col-md-4">
-					<col class="col-md-2">
-					<col class="col-md-4">
+					<col width="20%">
+					<col width="30%">
+					<col width="20%">
+					<col width="30%">
 				</colgroup>
 
 				<tbody>
@@ -95,12 +102,12 @@ th {
 			<h4>비용환급</h4>
 				<table class="table table-bordered" style="margin-bottom: 3px;">
 					<colgroup>
-						<col class="col-md-1">
-						<col class="col-md-3">
-						<col class="col-md-1">
-						<col class="col-md-3">
-						<col class="col-md-1">
-						<col class="col-md-3">
+						<col width="10%">
+						<col width="20%">
+						<col width="10%">
+						<col width="20%">
+						<col width="10%">
+						<col width="20%">
 					</colgroup>
 					<tbody>
 						<tr>
@@ -132,11 +139,11 @@ th {
 			<h4>결재현황</h4>
 			<table class="table table-bordered">
 				<colgroup>
-					<col class="col-md-1">
-					<col class="col-md-2">
-					<col class="col-md-2">
-					<col class="col-md-6">
-					<col class="col-md-1">
+					<col width="6%">
+					<col width="10%">
+					<col width="20%">
+					<col width="48%">
+					<col width="12%">
 				</colgroup>
 				<tbody>					
 					<tr>
@@ -156,15 +163,21 @@ th {
 							<c:choose>
 								<c:when test="${not empty sett.ediComments}">
 									<td>${sett.ediComments}</td>
+									<td>${sett.ediSettStatusName}</td>
 								</c:when>
 								<c:when test="${empty sett.ediComments && emp.empCode eq sett.settEmpCode && sett.ediSettStatus eq '0'}">
-									<td style="color:blueviolet;">현재 사용자가 결재하여야 합니다.</td>
+									<td>
+										<input id="settComments" class="form-control" placeholder="결재 시 첨언을 작성하세요.">																			
+									</td>
+									<td>
+										<a class="article-link" href="#">결재click!</a>
+									</td>
 								</c:when>
 								<c:otherwise>
 									<td></td>
+									<td>${sett.ediSettStatusName}</td>
 								</c:otherwise>
-							</c:choose>							
-							<td>${sett.ediSettStatusName}</td>
+							</c:choose>
 						</tr>	
 					</c:forEach>				
 				</tbody>
@@ -181,29 +194,41 @@ th {
 			<h4>합의현황</h4>
 			<table class="table table-bordered">
 				<colgroup>
-					<col class="col-md-2">
-					<col class="col-md-2">
-					<col class="col-md-5">
-					<col class="col-md-1">
-					<col class="col-md-1">
+					<col width="15%">
+					<col width="20%">
+					<col width="45%">
+					<col width="12%">
 				</colgroup>
 				<tbody>
 					<tr>
 						<th>합의부서</th>
 						<th>합의일시</th>
 						<th>합의자 첨언</th>
-						<th>요청자</th>
 						<th>합의상태</th>
 					</tr>
 					
 					<c:if test="${not empty coWork}">
 						<c:forEach var="coWork" items="${coWork}">
+							<input type="hidden" name="ediCoWorkStatus" value="${coWork.ediCoWorkStatus}">
 							<tr>
 								<td>${coWork.mgrEmpName} [${coWork.coWorkDeptName}]</td>
 								<td><fmt:formatDate value="${coWork.updateDate}" pattern="yyyy년 MM월 dd일 " /></td>
-								<td>${coWork.ediCoWorkComments}</td>
-								<td>${coWork.inpEmpName}</td>
-								<td>${coWork.ediCoWorkStatusName}</td>
+								<c:if test="${edi.ediStatus eq '0'}">
+									<c:choose>												
+										<c:when test="${coWork.ediCoWorkStatus eq '0' && emp.empCode eq coWork.mgrEmpCode}">
+											<td>
+												<input id="settComments" class="form-control" placeholder="합의 시 첨언을 작성하세요.">																			
+											</td>
+											<td>
+												<a class="article-link" class='btn' id="coWorkBtn" href="">합의click!</a>
+											</td>
+										</c:when>
+										<c:otherwise>
+											<td>${coWork.ediCoWorkComments}</td>
+											<td>${coWork.ediCoWorkStatusName}</td>
+										</c:otherwise>
+									</c:choose>															
+								</c:if>																					
 							</tr>
 						</c:forEach>				
 					</c:if>
@@ -221,8 +246,8 @@ th {
 			<h4>경유부서</h4>
 			<table class="table table-bordered">
 				<colgroup>
-					<col class="col-md-2">				
-					<col class="col-md-10">
+					<col width="15%">				
+					<col width="85%">
 				</colgroup>
 				<tbody>
 					<tr>
@@ -246,20 +271,13 @@ th {
 						<c:forEach items="${sett}" var="sett" varStatus="status">
 							<c:if test="${status.last}">
 								<c:if test="${sett.ediSettStatus eq '0' && emp.empCode eq sett.settEmpCode}">
-									<button id="ediSettBtn" type="button" class="btn btn-dark btn-lg">결재하기</button>
+									
 								</c:if>
 							</c:if>
 						</c:forEach>
 					</c:if>
 					
-					<c:if test="${edi.ediStatus eq '0'}">
-						<c:forEach items="${coWork}" var="coWork">						
-							<c:if test="${coWork.ediCoWorkStatus eq '0' && emp.empCode eq coWork.mgrEmpCode}">
-								<button id="ediCoWorkBtn" type="button" class="btn btn-dark btn-lg">합의하기</button>
-							</c:if>					
-						</c:forEach>
-					</c:if>															
-
+					
 					<c:if test="${edi.ediStatus ne '1' || edi.ediStatus ne '2' && emp.empCode eq edi.inpEmpCode }">
 						<button id="ediDelBtn" type="button" class="btn btn-danger btn-lg">문서삭제</button>					
 					</c:if>
@@ -275,6 +293,9 @@ th {
 
 </div>
 
+<input type="hidden" id="deptCode" value="${emp.deptCode}">
+<input type="hidden" id="ediCode" value="${edi.ediCode}">
+
 <jsp:include page="../include/footer.jsp" />
 <jsp:include page="../include/plugin-js.jsp" />
 
@@ -283,6 +304,7 @@ th {
 $(function () {
 	
 	$("#ediDelBtn").click(function(){
+		
 		if(!confirm("해당 문서를 삭제하시겠습니까?")) {
 			return;
 		}
@@ -291,7 +313,7 @@ $(function () {
 		
 		$.ajax({
 			type : "DELETE",
-	        url : "/ediList/" + ediCode,
+	        url : "/ediList/del/" + ediCode,
 	        headers : {
 	            "Content-type" : "application/json",
 	            "X-HTTP-Method-Override" : "DELETE"
@@ -299,10 +321,47 @@ $(function () {
 	        dataType : "text",
 	        success : function (result) {
 	            if (result === "delSuccess") {
-	                alert("게시글 삭제 완료!");
+	                alert("문서 삭제 완료!");
 	                location.href="/ediList/1";
 	            }
 	        }
+		});
+	});
+	
+	$("#coWorkBtn").click(function(e){
+		
+		e.preventDefault();	
+		
+		if(!confirm("해당 문서에 합의하시겠습니까?")) {
+			return;
+		}
+		
+		console.log($("#ediCode").val());
+
+		const ediCoWork =  {
+			coWorkDeptCode : $("#deptCode").val(),
+			ediCoWorkComments :	$("#settComments").val(),
+			ediCode : $("#ediCode").val()
+		}
+
+		$.ajax({
+			type: "POST",
+			url: "/ediList/cowork",
+			headers : {
+				"Content-type" : "application/json",
+				"X-HTTP-Method-Override": "POST" 
+			},
+			dataType : "text",
+			data: JSON.stringify(ediCoWork),
+			success : function (result) {
+	            if (result === "cowork Success") {
+	                alert("문서 합의 완료!");
+	            }
+	            location.reload();
+	        },
+	        error: (e) => {
+				console.log("통신 실패: " + e);
+			}
 		});
 	});
 	

@@ -15,14 +15,14 @@
 
 <!-- 신규사원 입력 양식 -->
 
-<div style="margin-bottom: 0px;" class="virtual-box"></div>
+<div class="virtual-box"></div>
 
 <div class="container">
 	<div class="row">
 		<div class="offset-md-2 col-md-4">
 			<div class="card" style="width:200%;">
 				<div class="card-header text-white" style="background: #343A40;">
-					<h2><span style="color: gray;">MyCompany</span> 신규사원 등록화면</h2>
+					<h2>신규사원 등록화면</h2>
 				</div>
 				<div class="card-body">
 					<form action="/empWrite" name="signup" id="signUpForm" method="post"	style="margin-bottom: 0;">						

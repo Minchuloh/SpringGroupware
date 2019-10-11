@@ -108,6 +108,10 @@ public class EmpServiceImpl implements EmpService {
 		return empMapper.getEmpBySessionId(sessionId);
 	}
 
+	@Override
+	public List<EmpList> getEmpByName(String empName) {
+		return empMapper.getEmpByEmpName(empName);
+	}
 	
 
 }

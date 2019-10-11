@@ -17,13 +17,16 @@
 th {
        background-color: #eee;
    }
+a {
+	hover: background-color: #FFCC99;
+}
 </style>
 </head>
 <body>
 
 <jsp:include page="../include/header.jsp" />
 
-<div class="virtual-box" style="margin-bottom: 20px;"></div>
+<div class="virtual-box"></div>
 
 <div class="container">
 	<div class="row">
@@ -39,18 +42,18 @@ th {
 					
                 <table class="table table-bordered">
                     <colgroup>
-                        <col class="col-md-2">
-                        <col class="col-md-4">
-                        <col class="col-md-2">
-                        <col class="col-md-4">
+                        <col width="15%">
+						<col width="35%">
+						<col width="15%">
+						<col width="30%">
                     </colgroup>
 
                     <tbody>
                         <tr>
                             <th style="vertical-align: middle;">기간</th>
                             <td colspan="3">
-                                    <input type="date" id="sDate" name="startDate" class="glyphicon glyphicon-calendar" title="기간시작" /> ~
-									<input type="date" id="eDate" name="endDate" class="glyphicon glyphicon-calendar" title="기간끝" />
+                                    <input type="date" id="fDate" name="sDate" title="기간시작" /> ~
+									<input type="date" id="tDate" name="fDate" title="기간끝" />
 									<a href="#" class="btn btn-warning"><strong>1주일</strong></a>
 									<a href="#" class="btn btn-warning"><strong>2주일</strong></a>
 									<a href="#" class="btn btn-warning"><strong>1개월</strong></a>
@@ -58,15 +61,14 @@ th {
                         </tr>
                         <tr>
                             <th style="vertical-align: middle;">문서번호</th>								
-                            <td><input type="text" class="form-control" placeholder="ex) E1909010001"></td>                            
+                            <td><input name="ediCode" type="text" class="form-control" placeholder="ex) E0000131"></td>                            
                             <th style="vertical-align: middle;">문서유형</th>
                             <td>
-                                <select class="form-control" name="workType" id="work_type">
-                                    <option value="00">전체</option>
-                                    <option value="01">연차계</option>
-                                    <option value="02">오전반차</option>
-                                    <option value="03">오후반차</option>
-                                    <option value="04">출장계</option>
+                                <select class="form-control" name="ediType" id="work_type">
+                                    <option value="">===전체===</option>
+                                    <option value="0001">일반품의</option>
+                                    <option value="0002">근태신청</option>
+									<option value="0003">비용환급</option>
                                 </select>
                             </td>
                         </tr>
@@ -77,7 +79,7 @@ th {
                             </td>                        
                             <th style="vertical-align: middle;">작성자</th>
                             <td>
-                                <input type="hidden" name="settEmpCode" value="H0002">
+                                <input type="hidden" name="inpEmpCode" value="H0078">
                                 <input type="button" id="edi_setter_main" style="text-align: left;"  
                                     class="form-control" data-target="#edi_setter" data-toggle="modal">
                             </td>
@@ -87,8 +89,8 @@ th {
                 </table>
 
                 <div style="text-align: center;">
-                    <a href="/ediList/1" class="btn btn-danger"><strong>검색하기</strong></a>
-                    <a href="/ediWrite" class="btn btn-default"><strong>등록하기</strong></a>
+                    <input type="submit" class="btn btn-danger" value="검색하기"></a>
+                    <a href="/ediWrite" class="btn btn-dark"><strong>등록하기</strong></a>
                 </div>
             
             </form>			
@@ -131,34 +133,32 @@ th {
 		<c:if test="${pageCreator.prev}">
            	<li class="page-item">
            		<a id="page-prev" class="page-link page-custom" 
-           		href="/ediList/${pc.beginPage-1}?keyword=${search.keyword}&condition=${search.condition}">이전</a>
+           		href="/ediList/${pc.beginPage-1}">이전</a>
           	</li>
 		</c:if>
 		
 		<c:forEach var="pageNum" begin="${pageCreator.pageStart}" end="${pageCreator.pageRealEnd}">
            	<li class="page-item">
            		<a class="page-link page-custom ${(pageNum == pageCreator.pageNum) ? 'page-active' : ''}" 
-           		href="/ediList/${pageNum}?keyword=${search.keyword}&condition=${search.condition}">${pageNum}</a>
+           		href="/ediList/${pageNum}">${pageNum}</a>
            	</li>
            </c:forEach>
            
 		<c:if test="${pageCreator.next}">
            	<li class="page-item">
            		<a id="page-next" class="page-link page-custom" 
-           		href="/ediList/${pc.pageRealEnd+1}?keyword=${search.keyword}&condition=${search.condition}">다음</a>
+           		href="/ediList/${pc.pageRealEnd+1}">다음</a>
            	</li>
        	</c:if>
     </ul>
     
-    <div class="modal fade" id="edi_setter" role="dialog">
+    <div class="modal fade" id="edi_setter" role="dialog" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <!-- header -->
             <div class="modal-header">
-                <!-- 닫기(x) 버튼 -->
-                <button type="button" class="close" data-dismiss="modal">×</button>
                 <!-- header title -->
-                <h4 class="modal-title">작성자 검색</h4>
+                <h4 style="text-align: left;"class="modal-title">작성자 검색</h4>
             </div>
             <!-- body -->
             <div class="modal-body">
@@ -168,27 +168,23 @@ th {
                             <th style="vertical-align: middle;">조회</th>
                             <td>
                                 <div style="margin-bottom: 0px;"
-                                    class="form-group form-inline">
-                                    <input type="text" class="form-control"
-                                        placeholder="이름을 입력하세요.">
-                                    <button id="seachSett" class="btn btn-dark" type="submit"
-                                        value="test">검색</button>
+                                    class="form-group form-inline input-group">
+                                    <input type="text" name="empName" class="form-control" placeholder="이름을 입력하세요.">
+                                    <button id="seachSett" class="btn btn-dark" type="submit">검색</button>
                                 </div>
                             </td>
                         </tr>
                     </tbody>                      
                 </table>  
-                <div id="nameSett" style="display: none;">
+                <div id="nameSett">
                     <hr>
-                    <input id="#nameSetter" class="btn-nameSetter btn btn-default"
-                        data-dismiss="modal" value="오민철[IT개발부]">
+                    
                 </div>            
             </div>          
 
             <!-- Footer -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-default"
-                    data-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
             </div>
         </div>
     </div>
@@ -203,15 +199,45 @@ th {
 <script>
 $(function () {
 
-    $("#seachSett").click(function () {
-        $("#nameSett").css("display", "");
-    });
-    $(".modal-body .btn-nameSetter").click(function () {
-        let setterName = $(".modal-body .btn-nameSetter").val();
+    $("#seachSett").click(function (e) {
+        
+    	e.preventDefault();
+    	
+    	$("a[name=nameSetter]").remove();
+    	
+    	let empName = $("input[name=empName]").val();
+    	
+    	$.getJSON('/empSett/' + empName + '.json', function(empList) {		
+
+			for (let i in empList) {	
+				
+				$("#nameSett").
+				append('<a id="nameSetter" name="nameSetter" class="btn btn-nameSetter" margin-right="3px"' 
+     			      +   'data-dismiss="modal" value="' + empList[i].empCode + '">'      			      
+     				  +    empList[i].empName + ' [' + empList[i].deptName + ']' 
+     				  +'</a>');				
+			}  			
+	
+    	});   	
+	
+    });       
+	
+    
+    $("#nameSett btn").click(function (e) {
+    	e.preventDefault();
+    	console.log("실행됨");
+        let setterName = $("#nameSett .btn-nameSetter").val();        
         $("#edi_setter_main").val(setterName);
+        $("a[name=nameSetter]").remove();
     });
- 
+    
+    $(".modal-footer .btn").click(function() {
+    	$("a[name=nameSetter]").remove();
+    });
+
+
 });
 </script>
+
 </body>
 </html>

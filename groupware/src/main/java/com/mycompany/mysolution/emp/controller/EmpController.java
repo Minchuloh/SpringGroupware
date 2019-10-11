@@ -90,4 +90,13 @@ public class EmpController {
 		
 		return mv;
 	}
+	
+	@GetMapping(value = "/empSett/{empName}")
+	public ResponseEntity<List<EmpList>> getEmpByNameTest(
+		@PathVariable("empName") String empName) {
+		
+		List<EmpList> empList = empService.getEmpByName(empName);	
+
+		return new ResponseEntity<>(empList, HttpStatus.OK);
+	}
 }

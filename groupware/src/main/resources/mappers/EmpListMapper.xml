@@ -45,7 +45,8 @@
 <select id="getEmpBySessionId" resultMap="EmpListMapping">
 	SELECT a.*, b.dept_name
 	FROM emp_list a, dept_list b
-	WHERE a.session_id = #{sessionId}
+	WHERE a.dept_code = b.dept_code
+	AND a.session_id = #{sessionId}
 </select>
 
 <select id="getEmpListWithPaging" resultMap="EmpListMapping">
@@ -64,6 +65,14 @@
 	WHERE 1=1 	
 	  AND rNum BETWEEN (#{ countPerPage } * (#{ page } - 1)) + 1
 	  AND (#{ countPerPage } * (#{ page } - 1)) + #{ countPerPage }
+</select>
+
+<select id="getEmpByEmpName" resultMap="EmpListMapping">
+	SELECT a.EMP_CODE, a.EMP_NAME, a.DEPT_CODE, b.DEPT_NAME
+	  FROM EMP_LIST a, DEPT_LIST b
+	 WHERE 1=1
+	   AND a.DEPT_CODE = b.DEPT_CODE
+	   AND a.EMP_NAME LIKE '%' || #{ empName } || '%'  
 </select>
 
 <select id="getBankInfo" resultMap="EmpListMapping">

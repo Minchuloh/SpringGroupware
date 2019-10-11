@@ -2,6 +2,8 @@ package com.mycompany.mysolution.edi.domain;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.mycompany.mysolution.emp.domain.EmpList;
 
 import lombok.Data;
@@ -23,6 +25,11 @@ public class EdiMaster {
 	String fileName;
 	Date inpDate;
 	Date updateDate;
+	
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	Date tDate;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	Date fDate;
 	
 	EdiSett ediSett;
 	EdiCoWork ediCoWork;

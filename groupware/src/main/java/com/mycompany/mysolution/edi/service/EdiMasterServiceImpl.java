@@ -1,5 +1,6 @@
 package com.mycompany.mysolution.edi.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.mycompany.mysolution.budget.domain.BudgetMgr;
 import com.mycompany.mysolution.budget.repository.BudgetMgrMapper;
-import com.mycompany.mysolution.common.searching.Search;
 import com.mycompany.mysolution.edi.domain.EdiBudgetUse;
 import com.mycompany.mysolution.edi.domain.EdiCoWork;
 import com.mycompany.mysolution.edi.domain.EdiInform;
@@ -36,8 +36,15 @@ public class EdiMasterServiceImpl implements EdiMasterService {
 	BudgetMgrMapper budgetMgrMapper;
 	
 	@Override
-	public List<EdiMaster> getEdiMasterAll(Search paging) {			
-		return ediMapper.getEdiMasterAll(paging);	
+	public List<EdiMaster> getEdiMasterAll(EdiMaster edi, int page, int countPerPage) {
+		
+		Map<String, Object> ediDatas = new HashMap<>();
+		
+		ediDatas.put("edi", edi);
+		ediDatas.put("page", page);
+		ediDatas.put("countPerPage", countPerPage);
+		
+		return ediMapper.getEdiMasterAll(ediDatas);	
 	}
 	
 	@Override
@@ -226,6 +233,11 @@ public class EdiMasterServiceImpl implements EdiMasterService {
 			log.info("EdiMaster 삭제할 데이터 없음");
 		}	
 		
+	}
+	
+	@Override
+	public void coWorkEdi(EdiCoWork ediCoWork) {
+		ediMapper.coWorkEdi(ediCoWork);		
 	}
 
 }

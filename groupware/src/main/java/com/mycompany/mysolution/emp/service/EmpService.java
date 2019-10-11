@@ -28,4 +28,6 @@ public interface EmpService {
 	
 	void keepLogin(String sessionId, Date limitTime, String account);
 	
+	List<EmpList> getEmpByName(String empName);
+	
 }

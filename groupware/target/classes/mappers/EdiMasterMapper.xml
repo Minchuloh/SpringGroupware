@@ -12,7 +12,9 @@
 </select>
 
 <select id="getEdiMasterAll" resultMap="EdiMasterMapping">
-	SELECT edi_code, inp_emp_code, inp_emp_name, edi_type_name, edi_status_name, inp_date, edi_title, edi_contents, edi_status, edi_type
+
+	SELECT edi_code, inp_emp_code, inp_emp_name, edi_type_name, 
+     	   edi_status_name, inp_date, edi_title, edi_contents, edi_status, edi_type
 	FROM 
 	   ( SELECT a.edi_code, a.inp_emp_code, a.edi_status, a.edi_type,
 	       (SELECT emp_name FROM emp_list b WHERE b.emp_code = a.inp_emp_code) AS inp_emp_name,
@@ -20,7 +22,9 @@
 	       (SELECT code_name FROM common_code_map b WHERE b.column_id = 'EDI_STATUS' AND b.code_id = a.EDI_STATUS) AS edi_status_name,	       
 	       inp_date, edi_title, edi_contents,
 	       ROW_NUMBER() OVER(ORDER BY edi_code DESC) AS rNum
-	    FROM edi_master a     
+	    FROM edi_master a
+	    WHERE 1=1
+	    <include refid="searchEdi" /> 
 	    ORDER BY a.edi_code DESC )
 	WHERE 1=1 	
 	  AND rNum BETWEEN (#{ countPerPage } * (#{ page } - 1)) + 1
@@ -50,7 +54,7 @@
 </select>
 
 <select id="getEdiCoWork" resultMap="EdiCoWorkMapping">
-	SELECT COWORK_DEPT_CODE, EDI_COWORK_STATUS, EDI_COWORK_COMMENTS, INP_EMP_CODE,
+	SELECT COWORK_DEPT_CODE, EDI_COWORK_STATUS, EDI_COWORK_COMMENTS, INP_EMP_CODE, a.UPDATE_DATE,
 		   (SELECT CODE_NAME FROM COMMON_CODE_MAP WHERE COLUMN_ID = 'EDI_STATUS' AND CODE_ID = EDI_COWORK_STATUS) AS EDI_COWORK_STATUS_NAME,
 		   (SELECT EMP_NAME FROM EMP_LIST WHERE EMP_CODE = b.INP_EMP_CODE) AS INP_EMP_NAME,
 		   (SELECT DEPT_NAME FROM DEPT_LIST WHERE DEPT_CODE = a.COWORK_DEPT_CODE) AS COWORK_DEPT_NAME,
@@ -184,6 +188,44 @@
 	SELECT count(*) from edi_inform_dept WHERE edi_code = #{ ediCode }
 </select>
 
+<update id="coWorkEdi">
+	UPDATE EDI_COWORK_DEPT 
+    SET edi_cowork_comments = #{ ediCoWorkComments },
+ 	    edi_cowork_status = '1',
+ 	    update_date = sysdate
+	WHERE EDI_CODE = #{ ediCode } AND COWORK_DEPT_CODE = #{ coWorkDeptCode }
+</update>
+
+
+<sql id="searchEdi">
+	
+	<choose>
+		<when test="ediCode != null">
+			AND a.edi_code = #{ ediCode }
+		</when>
+		<otherwise>
+			<if test="fDate != null">
+				AND a.inp_date >= #{ fDate }
+			</if>
+			<if test="tDate != null">
+			<![CDATA[
+				AND a.inp_date <= #{ tDate }
+			]]>
+			</if>
+			<if test="ediType != null">
+				AND a.edi_type LIKE '%' #{ ediType } || '%'
+			</if>
+			<if test="ediTitle != null">
+				AND a.EDI_TITLE LIKE '%' || #{ ediTitle } || '%'
+			</if>
+			<if test="inpEmpCode != null">
+				AND a.inp_emp_code = 'inpEmpCode'
+			</if>		
+		</otherwise>
+	</choose>
+	       
+</sql>
+
 
 <resultMap id="EdiMasterMapping" type="com.mycompany.mysolution.edi.domain.EdiMaster">	
 	<id column="edi_code" property="ediCode"/>
@@ -200,6 +242,8 @@
 	<result column="edi_status_name" property="ediStatusName"/>
 	<result column="dept_code" property="deptCode" />
 	<result column="dept_name" property="deptName" />
+	<result column="f_date" property="fDate" />
+	<result column="t_date" property="tDate" />	
 </resultMap>
 
 <resultMap id="EdiSettMapping" type="com.mycompany.mysolution.edi.domain.EdiSett" >

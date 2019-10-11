@@ -1,8 +1,8 @@
 package com.mycompany.mysolution.edi.repository;
 
 import java.util.List;
+import java.util.Map;
 
-import com.mycompany.mysolution.common.searching.Search;
 import com.mycompany.mysolution.edi.domain.EdiBudgetUse;
 import com.mycompany.mysolution.edi.domain.EdiCoWork;
 import com.mycompany.mysolution.edi.domain.EdiInform;
@@ -14,7 +14,7 @@ public interface EdiMasterMapper {
 	
 	public Integer getEdiTotalCount();
 	
-	public List<EdiMaster> getEdiMasterAll(Search paging);	
+	public List<EdiMaster> getEdiMasterAll(Map<String, Object> datas);	
 	public EdiMaster getEdiMaster(String ediCode);	
 	public List<EdiSett> getEdiSett(String ediCode);	
 	public EdiWorkDay getEdiWorkDay(String ediCode);	
@@ -43,5 +43,7 @@ public interface EdiMasterMapper {
 	public int getRefundChk(String ediCode);
 	public int getEdiCoWorkChk(String ediCode);
 	public int getEdiInformChk(String ediCode);
+
+	public void coWorkEdi(EdiCoWork ediCoWork);
 	
 }
