@@ -12,7 +12,7 @@ import com.mycompany.mysolution.edi.domain.EdiWorkDay;
 
 public interface EdiMasterMapper {
 	
-	public Integer getEdiTotalCount();
+	public Integer getEdiTotalCount(EdiMaster edi);
 	
 	public List<EdiMaster> getEdiMasterAll(Map<String, Object> datas);	
 	public EdiMaster getEdiMaster(String ediCode);	
@@ -45,5 +45,13 @@ public interface EdiMasterMapper {
 	public int getEdiInformChk(String ediCode);
 
 	public void coWorkEdi(EdiCoWork ediCoWork);
+
+	public void settFinishEdi(EdiSett ediSett);
+
+	public void finishEdi(String ediCode);
+	
+	public void settEdi(EdiSett ediSett);
+
+	public void settAddEdi(EdiSett ediSett);	
 	
 }

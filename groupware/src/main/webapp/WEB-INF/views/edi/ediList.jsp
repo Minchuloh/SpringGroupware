@@ -38,7 +38,7 @@ a {
 			<div class="card-body">
 			
 			<!--START 전자결재 입력 폼 -->
-			<form action="/ediList/1" method="GET">	
+			<form id="searchForm" action="/ediList/1" method="GET">	
 					
                 <table class="table table-bordered">
                     <colgroup>
@@ -52,11 +52,11 @@ a {
                         <tr>
                             <th style="vertical-align: middle;">기간</th>
                             <td colspan="3">
-                                    <input type="date" id="fDate" name="sDate" title="기간시작" /> ~
-									<input type="date" id="tDate" name="fDate" title="기간끝" />
-									<a href="#" class="btn btn-warning"><strong>1주일</strong></a>
-									<a href="#" class="btn btn-warning"><strong>2주일</strong></a>
-									<a href="#" class="btn btn-warning"><strong>1개월</strong></a>
+                                    <input type="date" id="fDate" name="fDate" title="기간시작" /> ~
+									<input type="date" id="tDate" name="tDate" title="기간끝" />
+									<a id="oneWeek" href="" class="btn btn-warning"><strong>1주일</strong></a>
+									<a id="twoWeek" href="" class="btn btn-warning"><strong>2주일</strong></a>
+									<a id="oneMonth" href="" class="btn btn-warning"><strong>1개월</strong></a>
                             </td>
                         </tr>
                         <tr>
@@ -78,8 +78,8 @@ a {
                                 <input name="ediTitle" type="text" class="form-control"	placeholder="문서 제목입니다">
                             </td>                        
                             <th style="vertical-align: middle;">작성자</th>
-                            <td>
-                                <input type="hidden" name="inpEmpCode" value="H0078">
+                            <td>        
+                            	<input type="hidden" name="inpEmpCode" >                        
                                 <input type="button" id="edi_setter_main" style="text-align: left;"  
                                     class="form-control" data-target="#edi_setter" data-toggle="modal">
                             </td>
@@ -89,7 +89,7 @@ a {
                 </table>
 
                 <div style="text-align: center;">
-                    <input type="submit" class="btn btn-danger" value="검색하기"></a>
+                    <input type="submit" class="btn btn-danger" value="검색하기">
                     <a href="/ediWrite" class="btn btn-dark"><strong>등록하기</strong></a>
                 </div>
             
@@ -133,26 +133,26 @@ a {
 		<c:if test="${pageCreator.prev}">
            	<li class="page-item">
            		<a id="page-prev" class="page-link page-custom" 
-           		href="/ediList/${pc.beginPage-1}">이전</a>
+           		href="/ediList/${pc.beginPage-1}?fDate=${edi.fDate}&tDate=${edi.tDate}&ediCode=${edi.fDate}&ediType=${edi.ediType}&ediTitle=${edi.ediTitle}&inpEmpCode=${edi.inpEmpCode}">이전</a>
           	</li>
 		</c:if>
 		
 		<c:forEach var="pageNum" begin="${pageCreator.pageStart}" end="${pageCreator.pageRealEnd}">
            	<li class="page-item">
            		<a class="page-link page-custom ${(pageNum == pageCreator.pageNum) ? 'page-active' : ''}" 
-           		href="/ediList/${pageNum}">${pageNum}</a>
+           		href="/ediList/${pageNum}?fDate=${edi.fDate}&tDate=${edi.tDate}&ediCode=${edi.fDate}&ediType=${edi.ediType}&ediTitle=${edi.ediTitle}&inpEmpCode=${edi.inpEmpCode}">${pageNum}</a>
            	</li>
            </c:forEach>
            
 		<c:if test="${pageCreator.next}">
            	<li class="page-item">
            		<a id="page-next" class="page-link page-custom" 
-           		href="/ediList/${pc.pageRealEnd+1}">다음</a>
+           		href="/ediList/${pc.pageRealEnd+1}?fDate=${edi.fDate}&tDate=${edi.tDate}&ediCode=${edi.fDate}&ediType=${edi.ediType}&ediTitle=${edi.ediTitle}&inpEmpCode=${edi.inpEmpCode}">다음</a>
            	</li>
        	</c:if>
     </ul>
     
-    <div class="modal fade" id="edi_setter" role="dialog" data-backdrop="static">
+<div class="modal fade" id="edi_setter" role="dialog" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <!-- header -->
@@ -212,7 +212,7 @@ $(function () {
 			for (let i in empList) {	
 				
 				$("#nameSett").
-				append('<a id="nameSetter" name="nameSetter" class="btn btn-nameSetter" margin-right="3px"' 
+				append('<a id="nameSetter'+ i +'" name="nameSetter" class="btn btn-nameSetter" margin-right="3px"' 
      			      +   'data-dismiss="modal" value="' + empList[i].empCode + '">'      			      
      				  +    empList[i].empName + ' [' + empList[i].deptName + ']' 
      				  +'</a>');				
@@ -223,17 +223,112 @@ $(function () {
     });       
 	
     
-    $("#nameSett btn").click(function (e) {
+    $("#nameSett").on("click", "a[name=nameSetter]", function (e) {
+    	
     	e.preventDefault();
-    	console.log("실행됨");
-        let setterName = $("#nameSett .btn-nameSetter").val();        
-        $("#edi_setter_main").val(setterName);
-        $("a[name=nameSetter]").remove();
+    	
+    	let inpEmpCode = $(this).attr('value');
+    	let empDeptName = $(this).text();
+        
+        $("input[name=inpEmpCode]").val(inpEmpCode);
+        
+        $("#edi_setter_main").val(empDeptName);
+        
+        $('#edi_setter').modal('hide');
+        $('body').removeClass('modal-open');
+        $('.modal-backdrop').remove();
+
     });
     
     $(".modal-footer .btn").click(function() {
     	$("a[name=nameSetter]").remove();
     });
+    
+    $("#oneWeek").click(function(e) {
+    	
+    	e.preventDefault();
+    	
+    	const tDate = now();
+    	const fDate = beforeOneWeek();
+    	
+    	$("#tDate").val(tDate);
+    	$("#fDate").val(fDate);
+    
+    });
+    
+	$("#twoWeek").click(function(e) {
+	    	
+    	e.preventDefault();
+    	
+    	const tDate = now();
+    	const fDate = beforeTwoWeek();
+    	
+    	$("#tDate").val(tDate);
+    	$("#fDate").val(fDate);
+    
+    });
+	
+	$("#oneMonth").click(function(e) {
+    	
+    	e.preventDefault();
+    	
+    	const tDate = now();
+    	const fDate = beforeOneMonth();
+    	
+    	$("#tDate").val(tDate);
+    	$("#fDate").val(fDate);
+    
+    });
+    
+    
+    function now() {
+    	
+    	const now = new Date();
+
+    	const day = ("0" + now.getDate()).slice(-2);
+    	const month = ("0" + (now.getMonth() + 1)).slice(-2);
+
+    	const today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+    	
+    	return today;
+    	
+    }
+    
+    function beforeOneWeek() {
+    	let myDate = new Date();
+    	myDate.setDate(myDate.getDate() - 7);
+    	
+    	const day = ("0" + myDate.getDate()).slice(-2);
+    	const month = ("0" + (myDate.getMonth() + 1)).slice(-2);
+    	
+    	const beforeOneWeekDay = myDate.getFullYear()+"-"+(month)+"-"+(day);
+    	
+    	return beforeOneWeekDay;
+    }
+    
+    function beforeTwoWeek() {
+    	let myDate = new Date();
+    	myDate.setDate(myDate.getDate() - 14);
+    	
+    	const day = ("0" + myDate.getDate()).slice(-2);
+    	const month = ("0" + (myDate.getMonth() + 1)).slice(-2);
+    	
+    	const beforeTwoWeekDay = myDate.getFullYear()+"-"+(month)+"-"+(day);
+    	
+    	return beforeTwoWeekDay;
+    }
+    
+    function beforeOneMonth() {
+    	let myDate = new Date();
+    	myDate.setDate(myDate.getDate() - 30);
+    	
+    	const day = ("0" + myDate.getDate()).slice(-2);
+    	const month = ("0" + (myDate.getMonth() + 1)).slice(-2);
+    	
+    	const beforeTwoWeekDay = myDate.getFullYear()+"-"+(month)+"-"+(day);
+    	
+    	return beforeTwoWeekDay;
+    }
 
 
 });

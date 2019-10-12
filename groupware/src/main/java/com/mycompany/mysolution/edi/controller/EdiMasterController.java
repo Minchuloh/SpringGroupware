@@ -63,9 +63,11 @@ public class EdiMasterController {
 		List<EdiMaster> ediList = 
 				ediService.getEdiMasterAll(edi, paging.getPage(), paging.getCountPerPage());
 		
-		log.info("검색단 조회 : " + ediList);
+		log.info("param : " + edi);
+		ediList.forEach(e -> log.info("검색단 조회 : " + ediList));
+//		log.info("검색단 조회 : " + ediList);
 		
-		Integer totalCount = ediService.getEdiTotalCount();
+		Integer totalCount = ediService.getEdiTotalCount(edi);
 		PageCreator pageCreator = new PageCreator(pageNum, totalCount);
 		
 		mv.addObject("ediList", ediList);
@@ -172,11 +174,14 @@ public class EdiMasterController {
 		EmpList emp = empService.getEmpBySessionId(session.getId());
 		mv.addObject("emp", emp);
 		
+		log.info("ediCode: " + ediCode);
+		
 		EdiMaster edi = ediService.getEdiMaster(ediCode);
 		List<EdiSett> sett = ediService.getEdiSett(ediCode);
 		List<EdiCoWork> coWork = ediService.getCoWork(ediCode);
 		List<EdiInform> inform = ediService.getInform(ediCode);
 		EdiWorkDay workDay = ediService.getWorkDay(ediCode);
+		log.info("workDay: " + workDay);
 		EdiBudgetUse refund = ediService.getRefund(ediCode);
 		
 		mv.addObject("edi", edi);
@@ -210,6 +215,15 @@ public class EdiMasterController {
 		return "cowork Success";
 	}
 	
+	@PostMapping("/ediList/ediSett")
+	public String ediSett(@RequestBody EdiSett ediSett) {
+		
+		log.info("전자결재 결재(SETT) 요청: " + ediSett);
+		
+		ediService.settEdi(ediSett);
+		
+		return "sett Success";
+	}
 	
 	
 }

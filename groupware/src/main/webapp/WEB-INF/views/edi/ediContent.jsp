@@ -83,7 +83,7 @@ td {
 						<th style="vertical-align: middle;">근태일자</th>
 						<td><fmt:formatDate value="${workDay.ediWorkDate}" pattern="yyyy년 MM월 dd일 " /></td>
 						<th style="vertical-align: middle;">근태유형</th>
-						<td>${workDay.workType}</td>
+						<td>${workDay.ediWorkType}</td>
 					</tr>
 					</c:if>
 					<tr>
@@ -154,9 +154,10 @@ td {
 						<th>결재상태
 					</tr>
 					<c:forEach var="sett" items="${sett}" >
+						<input id="settEmpCode" type="hidden" value="${sett.settEmpCode}" >
 						<input type="hidden" value="${sett.ediSettStatus}" >
 						<tr>
-							<td>${sett.ediSeq}</td>
+							<td id="ediSeq">${sett.ediSeq}</td>
 							<td>${sett.settEmpName}</td>
 							<td><fmt:formatDate value="${sett.updateDate}" pattern="yyyy년 MM월 dd일 " /></td>
 							
@@ -167,10 +168,10 @@ td {
 								</c:when>
 								<c:when test="${empty sett.ediComments && emp.empCode eq sett.settEmpCode && sett.ediSettStatus eq '0'}">
 									<td>
-										<input id="settComments" class="form-control" placeholder="결재 시 첨언을 작성하세요.">																			
+										<input id="settComments"  class="form-control" placeholder="결재 시 첨언을 작성하세요.">																			
 									</td>
 									<td>
-										<a class="article-link" href="#">결재click!</a>
+										<a class="article-link" id="settBtn" href="" data-target="#edi_setter" data-toggle="modal">결재click!</a>
 									</td>
 								</c:when>
 								<c:otherwise>
@@ -291,7 +292,69 @@ td {
 	
 </div>	<!-- END ROW-->	
 
+<div class="modal fade" id="edi_setter" role="dialog" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- header -->
+            <div class="modal-header">
+                <!-- header title -->
+                <h4 style="text-align: left;"class="modal-title">결재유형</h4>
+            </div>
+            <!-- body -->
+            <div class="modal-body">          
+            	<div class="radio">
+	                <label class="radio-inline"> 
+						<input type="radio" name="ediSettType" value="add" checked> 상위결재자 &nbsp;
+					</label>
+					<label class="radio-inline"> 
+						<input type="radio" name="ediSettType" value="finish">결재마감 
+					</label> 
+           		</div> 			                             
+     
+                
+                <hr>
+                <br>
+                
+                <div id="add" disabled>	<!-- 상위결재자 검색 -->
+                <h5>상위결재자 검색</h5>                
+                
+	                <table class="table table-bordered">
+	                    <tbody>
+	                        <tr>
+	                            <th style="vertical-align: middle;">조회</th>
+	                            <td>
+	                                <div style="margin-bottom: 0px;"
+	                                    class="form-group form-inline input-group">
+	                                    <input type="text" name="empName" class="form-control" placeholder="이름을 입력하세요.">
+	                                    <button id="seachSett" class="btn btn-dark" type="submit">검색</button>
+	                                </div>
+	                            </td>
+	                        </tr>
+	                    </tbody>                      
+	                </table>  
+	                <div id="nameSett">
+	                    <hr>
+	                    
+	                </div>
+                </div>	<!-- END 상위결재자 검색 -->
+                
+                <div id="finish" style="display:none;"  disabled>	<!-- 상위결재자 검색 -->
+                	결재마감 하시겠습니까? &nbsp;&nbsp;
+                	<button id="settFinish">마감하기</button>
+                </div>
+
+            </div>          
+
+            <!-- Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+    
 </div>
+
+</div>	<!-- end Container -->
 
 <input type="hidden" id="deptCode" value="${emp.deptCode}">
 <input type="hidden" id="ediCode" value="${edi.ediCode}">
@@ -364,6 +427,123 @@ $(function () {
 			}
 		});
 	});
+	
+	$("input:radio[name=ediSettType]").click(function () {
+        let checked_radio = $("input:radio[name=ediSettType]:checked").val();
+        if (checked_radio === 'add') {
+            $('#add').css("display", "");
+            $('#finish').css("display", "none");
+        } else {
+            $('#add').css("display", "none");
+            $('#finish').css("display", "");
+        }
+    });
+	
+	$("#settFinish").click(function() {
+		
+		if(!confirm("해당 문서를 결재마감하시겠습니까?")) {
+			return;
+		}
+		
+		const ediSett =  {
+				ediCode : $("#ediCode").val(),
+				ediSeq : $("#ediSeq").text(),
+				settEmpCode : $("#settEmpCode").val(),
+				ediComments : $("#settComments").val(),
+				finishYn : 'y'
+			}
+		
+		console.log($("#ediSett").val());
+
+			$.ajax({
+				type: "POST",
+				url: "/ediList/ediSett",
+				headers : {
+					"Content-type" : "application/json",
+					"X-HTTP-Method-Override": "POST" 
+				},
+				dataType : "text",
+				data: JSON.stringify(ediSett),
+				success : function (result) {
+		            if (result === "sett Success") {
+		                alert("문서 결재마감 완료!");
+		            }
+		            location.reload();
+		        },
+		        error: (e) => {
+					console.log("통신 실패: " + e);
+				}
+			});
+	});
+	
+	$("#seachSett").click(function (e) {
+        
+    	e.preventDefault();
+    	
+    	$("a[name=nameSetter]").remove();
+    	
+    	let empName = $("input[name=empName]").val();
+    	
+    	$.getJSON('/empSett/' + empName + '.json', function(empList) {		
+
+			for (let i in empList) {	
+				
+				$("#nameSett").
+				append('<a id="nameSetter'+ i +'" name="nameSetter" class="btn btn-nameSetter" margin-right="3px"' 
+     			      +   'data-dismiss="modal" value="' + empList[i].empCode + '">'      			      
+     				  +    empList[i].empName + ' [' + empList[i].deptName + ']' 
+     				  +'</a>');				
+			}  			
+	
+    	});   	
+	
+    });
+	
+	$("#nameSett").on("click", "a[name=nameSetter]", function (e) {
+	    	
+    	e.preventDefault();
+    	
+    	const settEmpCodeParam = $(this).attr('value');
+    	const empDeptName = $(this).text();
+        
+    	if(!confirm(empDeptName + " 을 상위 결재자로 지정하고 결재하시겠습니까?")) {
+			return;
+		}
+    	
+    	const ediSett =  {
+				ediCode : $("#ediCode").val(),
+				ediSeq : $("#ediSeq").text(),
+				settEmpCode : settEmpCodeParam,
+				finishYn : 'n'
+			}
+		
+		console.log($("#ediSett").val());
+
+			$.ajax({
+				type: "POST",
+				url: "/ediList/ediSett",
+				headers : {
+					"Content-type" : "application/json",
+					"X-HTTP-Method-Override": "POST" 
+				},
+				dataType : "text",
+				data: JSON.stringify(ediSett),
+				success : function (result) {
+		            if (result === "sett Success") {
+		                alert("문서 결재 및 상위결재자 지정 완료!");
+		            }
+		            location.reload();
+		        },
+		        error: (e) => {
+					console.log("통신 실패: " + e);
+				}
+			});
+        
+        $('#edi_setter').modal('hide');
+        $('body').removeClass('modal-open');
+        $('.modal-backdrop').remove();
+
+    });
 	
 });
     

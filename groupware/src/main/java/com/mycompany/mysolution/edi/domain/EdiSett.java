@@ -16,6 +16,7 @@ public class EdiSett {
 	String ediComments;
 	String ediSettStatus;
 	String ediSettStatusName;
+	String finishYn;
 	Date inpDate;
 	Date updateDate;
 	

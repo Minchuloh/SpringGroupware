@@ -78,8 +78,8 @@ public class EdiMasterServiceImpl implements EdiMasterService {
 	}
 
 	@Override
-	public Integer getEdiTotalCount() {
-		return ediMapper.getEdiTotalCount();
+	public Integer getEdiTotalCount(EdiMaster edi) {
+		return ediMapper.getEdiTotalCount(edi);
 	}
 	
 	@Transactional
@@ -238,6 +238,20 @@ public class EdiMasterServiceImpl implements EdiMasterService {
 	@Override
 	public void coWorkEdi(EdiCoWork ediCoWork) {
 		ediMapper.coWorkEdi(ediCoWork);		
+	}
+	
+	@Transactional
+	@Override
+	public void settEdi(EdiSett ediSett) {
+		
+		if (ediSett.getFinishYn().equals("y")) {
+			ediMapper.settFinishEdi(ediSett);
+			ediMapper.finishEdi(ediSett.getEdiCode());
+		} else {
+			ediMapper.settEdi(ediSett);
+			ediMapper.settAddEdi(ediSett);
+		}
+		
 	}
 
 }

@@ -48,10 +48,10 @@ td {
 			
 			<table class="table table-bordered">
 				<colgroup>
-					<col width="20%">
-					<col width="30%">
-					<col width="20%">
-					<col width="30%">
+					<col width="15%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
 				</colgroup>
 				<tbody>
 					<tr>
@@ -70,40 +70,33 @@ td {
 						</td>
 						<th>결재자</th>
 						<td>
-							<input type="hidden" name="settEmpCode" value="H0077">
-							<input type="button" id="edi_setter_main" 
-								style="background-color: #eee; text-align: left;"
-								class="form-control" data-target="#edi_setter" data-toggle="modal">
-							
-						</td>
+							<input type="hidden" name="settEmpCode">
+							<input type="button" id="edi_setter_main" style="text-align: left;"  
+                                    class="form-control" data-target="#edi_setter" data-toggle="modal">
+                        </td>
+						
 					</tr>
 					<tr>
 						<th>문서유형</th>
 						<td>
-							<div class="radio">
-								<label class="radio-inline"> 
-									<input type="radio" name="ediType" value="0001" checked> 일반품의
-								</label> 
-								<label class="radio-inline"> 
-									<input type="radio" name="ediType" value="0002"> 근태신청
-								</label> 
-								<label class="radio-inline"> 
-									<input type="radio" name="ediType" value="0003"> 비용환급
-								</label>
-							</div>
+							<div class="custom-control custom-radio custom-control-inline">
+							    <input type="radio" class="custom-control-input" id="ediType1" name="ediType" value="0001" checked="checked">
+							    <label class="custom-control-label" for="ediType1">일반품의</label>
+						    </div>
+						    <div class="custom-control custom-radio custom-control-inline">
+						        <input type="radio" class="custom-control-input" id="ediType2" name="ediType" value="0002">
+						        <label class="custom-control-label" for="ediType2">근태신청</label>
+						    </div>
+						    <div class="custom-control custom-radio custom-control-inline">
+						        <input type="radio" class="custom-control-input" id="ediType3" name="ediType" value="0003">
+						        <label class="custom-control-label" for="ediType3">비용환급</label>
+						    </div>
 						</td>
 						<th>첨부파일</th>
 						<td>
-							<input id="fileInput" type="file" data-class-button="btn btn-default"
-								data-class-input="form-control" data-icon-name="fa fa-upload" 
-								class="form-control" style="position: absolute; clip: rect(0px, 0px, 0px, 0px);">
-							<div class="bootstrap-filestyle input-group">
-								<input type="text" id="userfile" class="form-control" name="fileName" disabled> 
-								<span class="group-span-filestyle input-group-btn" tabindex="0">
-									<label for="fileInput" class="btn btn-default "> 
-										<span class="glyphicon glyphicon-plus"></span>
-									</label>
-								</span>
+							<div class="custom-file">
+							   <input type="file" class="custom-file-input" id="customFile">
+							   <label class="custom-file-label" for="customFile">Choose file</label>
 							</div>
 						</td>
 					</tr>
@@ -203,7 +196,7 @@ td {
 								</div>
 							</td>
 							<th style="vertical-align: middle;">환급비용</th>
-							<td><input name="useBudget" type="text" class="form-control" placeholder="가용예산 범위 내 입력" numberOnly>
+							<td><input name="useBudget" type="text" class="form-control" placeholder="가용예산 범위 내 입력" value="0" numberOnly>
 							</td>
 						</tr>
 					</tbody>
@@ -215,7 +208,7 @@ td {
 
 			<p style="text-align: center;">
 				<button id="ediRegBtn" type="button" class="btn btn-dark btn-lg">문서등록</button>
-				<a id="ediCancelBtn" type="button" href="/ediList/1" class="btn btn-default btn-lg">작성취소</a>
+				<a id="ediCancelBtn" type="button" href="/ediList/1" style="background-color: #eee;" class="btn btn-outline-secondary btn-lg">작성취소</a>
 			</p>
 
 		</form>
@@ -225,7 +218,50 @@ td {
 
 	</div>
 	
-</div>
+<div class="modal fade" id="edi_setter" role="dialog" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- header -->
+            <div class="modal-header">
+                <!-- header title -->
+                <h4 style="text-align: left;"class="modal-title">작성자 검색</h4>
+            </div>
+            <!-- body -->
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th style="vertical-align: middle;">조회</th>
+                            <td>
+                                <div style="margin-bottom: 0px;"
+                                    class="form-group form-inline input-group">
+                                    <input type="text" name="empName" class="form-control" placeholder="이름을 입력하세요.">
+                                    <button id="seachSett" class="btn btn-dark" type="submit">검색</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>                      
+                </table>  
+                <div id="nameSett">
+                    <hr>
+                    
+                </div>            
+            </div>          
+
+            <!-- Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+	
+</div>	<!-- end Modal -->
+
+<form id="hiddenFile" action="/addEdiFile" method="post" enctype="multipart/form-data">	<!-- 첨부파일 : 게시글 등록 후 성공 시 첨부파일 등록 함수 함께 실행-->
+	<input type="file" name="fileName" style="display:none;" >
+</form>
+
+</div>	<!-- end Container -->
 	
 
 <jsp:include page="../include/footer.jsp" />
@@ -250,29 +286,30 @@ $(function () {
         }
     });
 
-    $(document).ready(function () {
-        $("#fileInput").on('change', function () {
-            if (window.FileReader) {  // modern browser    
-                var filename = $(this)[0].files[0].name;
-            } else {  // old IE    
-                var filename = $(this).val().split('/').pop().split('\\').pop();  // 파일명만 추출    
-            }
-            // 추출한 파일명 삽입    
-            $("#userfile").val(filename);
-        });
-    });
 
+	$("#seachSett").click(function (e) {
+	        
+	    	e.preventDefault();
+	    	
+	    	$("a[name=nameSetter]").remove();
+	    	
+	    	let empName = $("input[name=empName]").val();
+	    	
+	    	$.getJSON('/empSett/' + empName + '.json', function(empList) {		
+	
+				for (let i in empList) {	
+					
+					$("#nameSett").
+					append('<a id="nameSetter'+ i +'" name="nameSetter" class="btn btn-nameSetter" margin-right="3px"' 
+	     			      +   'data-dismiss="modal" value="' + empList[i].empCode + '">'      			      
+	     				  +    empList[i].empName + ' [' + empList[i].deptName + ']' 
+	     				  +'</a>');				
+				}  			
+		
+	    	});   	
+		
+	    }); 
 
-
-
-    $("#seachSett").click(function () {
-        $("#nameSett").css("display", "");
-    });
-
-    $(".modal-body .btn-nameSetter").click(function () {
-        let setterName = $(".modal-body .btn-nameSetter").val();
-        $("#edi_setter_main").val(setterName);
-    });
 
     $("#co_work_dept_code_select").change(function () {
 
@@ -318,8 +355,18 @@ $(function () {
     });
     
     $("#ediRegBtn").click(function(e){	
+    	 		
+    	$('input[name=useBudget]').val(removeComma($('input[name=useBudget]').val()));
+        console.log("value: ", $('input[name=useBudget]').val());
+
     	$("#edi_write").submit();
+    	
     });
+    
+    function removeComma(str) {
+		n = parseInt(str.replace(/,/g,""));
+		return n;
+	}
     
     $("input:text[numberOnly]").on("keyup", function() {
         $(this).val(addCommas($(this).val().replace(/[^0-9]/g,"")));
@@ -336,6 +383,32 @@ $(function () {
     }
 
    
+	$("#nameSett").on("click", "a[name=nameSetter]", function (e) {
+    	
+    	e.preventDefault();
+    	
+    	let settEmpCode = $(this).attr('value');
+    	let empDeptName = $(this).text();
+        
+        $("input[name=settEmpCode]").val(settEmpCode);
+        
+        $("#edi_setter_main").val(empDeptName);
+        
+        $('#edi_setter').modal('hide');
+        $('body').removeClass('modal-open');
+        $('.modal-backdrop').remove();
+
+    });
+    
+    $(".modal-footer .btn").click(function() {
+    	$("a[name=nameSetter]").remove();
+    });
+    
+    $(".custom-file-input").on("change", function() {
+   	  const fileName = $(this).val().split("\\").pop();
+   	  $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+   	});
+    
 
 });
     

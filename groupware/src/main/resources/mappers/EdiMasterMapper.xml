@@ -8,7 +8,10 @@
 </select>
 
 <select id="getEdiTotalCount" resultType="int">
-	SELECT COUNT(*) FROM edi_master
+	SELECT COUNT(*) 
+	FROM edi_master a
+	WHERE 1=1
+	  <include refid="searchEdiCount" /> 
 </select>
 
 <select id="getEdiMasterAll" resultMap="EdiMasterMapping">
@@ -196,30 +199,91 @@
 	WHERE EDI_CODE = #{ ediCode } AND COWORK_DEPT_CODE = #{ coWorkDeptCode }
 </update>
 
+<update id="settFinishEdi">
+	UPDATE EDI_SETT
+	SET EDI_SETT_STATUS = '1'
+	  , EDI_COMMENTS = #{ ediComments }
+	  , UPDATE_DATE = SYSDATE
+	WHERE EDI_CODE = #{ ediCode }
+	  AND EDI_SEQ = #{ ediSeq }
+</update>
+
+<update id="finishEdi">
+	UPDATE EDI_MASTER
+	SET EDI_STATUS = '1'
+	  , UPDATE_DATE = SYSDATE
+	WHERE EDI_CODE = #{ ediCode }
+</update>
+
+<update id="settEdi">
+	UPDATE EDI_SETT
+	SET EDI_SETT_STATUS = '1'
+	   ,EDI_COMMENTS = 'TEST'
+	   ,UPDATE_DATE = SYSDATE
+	WHERE EDI_CODE = #{ ediCode }
+	  AND EDI_SEQ = #{ ediSeq }
+</update>
+
+<insert id="settAddEdi">
+	INSERT INTO EDI_SETT (
+    	EDI_CODE, EDI_SEQ, SETT_EMP_CODE
+	) VALUES (
+	    #{ ediCode }, #{ ediSeq } + 1, #{ settEmpCode }
+	)
+</insert>
 
 <sql id="searchEdi">
 	
 	<choose>
-		<when test="ediCode != null">
+		<when test="edi.ediCode != null and !edi.ediCode.equals('')">
+			AND a.edi_code = #{ edi.ediCode }
+		</when>
+		<otherwise>
+			<if test="edi.fDate != null and !edi.fDate.equals('')">
+				AND a.inp_date >= #{ edi.fDate }
+			</if>
+			<if test="edi.tDate != null and !edi.tDate.equals('')">
+			<![CDATA[
+				AND a.inp_date <= #{ edi.tDate }
+			]]>
+			</if>
+			<if test="edi.ediType != null and !edi.ediType.equals('')">
+				AND a.edi_type LIKE '%' || #{ edi.ediType } || '%'
+			</if>
+			<if test="edi.ediTitle != null and !edi.ediTitle.equals('')">
+				AND a.EDI_TITLE LIKE '%' || #{ edi.ediTitle } || '%'
+			</if>
+			<if test="edi.inpEmpCode != null and !edi.inpEmpCode.equals('')">
+				AND a.inp_emp_code = #{ edi.inpEmpCode }
+			</if>		
+		</otherwise>
+	</choose>
+	       
+</sql>
+
+<sql id="searchEdiCount">
+	
+	<choose>
+		<when test="ediCode != null and !ediCode.equals('')">
 			AND a.edi_code = #{ ediCode }
 		</when>
 		<otherwise>
-			<if test="fDate != null">
+			<if test="fDate != null and !fDate.equals('')">
 				AND a.inp_date >= #{ fDate }
 			</if>
-			<if test="tDate != null">
+			<if test="tDate != null and !tDate.equals('')">
 			<![CDATA[
 				AND a.inp_date <= #{ tDate }
 			]]>
 			</if>
-			<if test="ediType != null">
-				AND a.edi_type LIKE '%' #{ ediType } || '%'
+			<if test="ediType != null and !ediType.equals('')">
+				AND a.edi_type LIKE '%' || #{ ediType } || '%'
 			</if>
-			<if test="ediTitle != null">
+			<if test="ediTitle != null and !ediTitle.equals('')">
 				AND a.EDI_TITLE LIKE '%' || #{ ediTitle } || '%'
 			</if>
-			<if test="inpEmpCode != null">
-				AND a.inp_emp_code = 'inpEmpCode'
+			<if test="inpEmpCode != null and !inpEmpCode.equals('')">
+				AND a.inp_emp_code = #{ inpEmpCode }
 			</if>		
 		</otherwise>
 	</choose>

@@ -48,12 +48,12 @@ public class RepositoryTest {
 		Map<String, Object> datas = new HashMap<>();	
 		
 		EdiMaster edi = new EdiMaster();
-		edi.setEdiCode("E0000131");
-		edi.setTDate(new Date(2019, 10, 1));
+//		edi.setEdiCode("E0000131");
+		edi.setTDate(new Date(2019, 10, 01));
 		edi.setFDate(new Date(2019, 10, 15));
 		edi.setEdiType("0001");
 		edi.setEdiTitle("");
-		edi.setInpEmpCode("");
+		edi.setInpEmpCode("H0078");
 		
 		Page paging = new Page();
 		paging.setPage(1);
@@ -136,9 +136,19 @@ public class RepositoryTest {
 		empMapper.getEmpListWithPaging(paging).forEach(emp -> log.info(emp));
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Test
 	public void getEdiTotalCountTest() {
-		log.info("count: " + ediMapper.getEdiTotalCount());
+		
+		EdiMaster edi = new EdiMaster();
+//		edi.setEdiCode("E0000131");
+		edi.setTDate(new Date(2019, 10, 01));
+		edi.setFDate(new Date(2019, 10, 15));
+		edi.setEdiType("0001");
+		edi.setEdiTitle("");
+		edi.setInpEmpCode("H0078");
+		
+		log.info("count: " + ediMapper.getEdiTotalCount(edi));
 	}
 	
 	

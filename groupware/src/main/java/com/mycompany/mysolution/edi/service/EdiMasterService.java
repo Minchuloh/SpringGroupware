@@ -12,7 +12,7 @@ import com.mycompany.mysolution.edi.domain.EdiWorkDay;
 
 public interface EdiMasterService {
 	
-	public Integer getEdiTotalCount();
+	public Integer getEdiTotalCount(EdiMaster edi);
 	
 	public List<EdiMaster> getEdiMasterAll(EdiMaster edi, int page, int countPerPage);
 	
@@ -41,5 +41,7 @@ public interface EdiMasterService {
 	public void deleteEdi(String ediCode);
 
 	public void coWorkEdi(EdiCoWork ediCoWork);
+
+	public void settEdi(EdiSett ediSett);
 	
 }
